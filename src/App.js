@@ -1,26 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
-import Panel from './containers/Panel';
+import styled from 'styled-components';
+import Workspace from './containers/Workspace';
 
-class App extends Component {
+const App = styled.div`
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-flow: column;
+`;
 
-  constructor(props) {
-    super(props);
-    this.state = { dingens: 1 };
-  }
+const TopBar = styled.div`
+  height: 50px;
+  background-color: orange;
+`;
 
-  componentDidMount() {
-    setTimeout(() => this.setState({dingens: 45}), 200);
-  }
+const StyledWorkspace = styled(Workspace)`
+  flex-grow: 1;
+`;
 
-  render() {
-    return (
-      <div className="App">
-        <Panel dingens={this.state.dingens}></Panel>
-      </div>
-    );
-  }
-}
-
-export default App;
+export default () => (
+  <App>
+    <TopBar></TopBar>
+    <StyledWorkspace></StyledWorkspace>
+  </App>
+)

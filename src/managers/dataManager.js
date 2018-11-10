@@ -69,7 +69,7 @@ function getChannelDefinitions() {
 async function init() {
     await loadChannelDefinitions("channelDefinitions.txt");
     console.log(channelDefinitions);
-    await generateTestData({ valuesPerSecond: 20, duration: 100 });
+    await generateTestData({ valuesPerSecond: 20, duration: 50 });
     console.log(data);
 }
 
