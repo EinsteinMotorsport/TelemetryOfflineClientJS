@@ -1,0 +1,2 @@
+
+export const MOSAIC_CHANGE = 'MOSAIC_CHANGE';
