@@ -1,13 +1,13 @@
-import React from 'react';
+import React from 'react'
 
-import dataManager from '../managers/dataManager';
-import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from 'd3';
-import { select, event } from 'd3-selection';
-import { axisBottom, axisLeft, } from 'd3-axis';
-import { scaleLinear } from 'd3-scale';
-import { line, curveMonotoneX } from 'd3-shape';
-import { max, extent } from 'd3-array';
-import { brushX } from 'd3-brush';
+import dataManager from '../managers/dataManager'
+import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from 'd3'
+import { select, event } from 'd3-selection'
+import { axisBottom, axisLeft, } from 'd3-axis'
+import { scaleLinear } from 'd3-scale'
+import { line, curveMonotoneX } from 'd3-shape'
+import { max, extent } from 'd3-array'
+import { brushX } from 'd3-brush'
 
 export default ({
     channel,
@@ -16,60 +16,60 @@ export default ({
     range,
     setRange
 }) => {
-    const entries = dataManager.getData(channel);
+    const entries = dataManager.getData(channel)
     if (!entries)
-        return null;
+        return null
 
     if (!range)
-        return null;
+        return null
 
 
     // set the dimensions and margins of the graph
-    const margin = { top: 20, right: 20, bottom: 20, left: 40 };
-    const innerWidth = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
+    const margin = { top: 20, right: 20, bottom: 20, left: 40 }
+    const innerWidth = width - margin.left - margin.right
+    const innerHeight = height - margin.top - margin.bottom
 
-    console.log(range);
+    console.log(range)
 
     // set the ranges
     const x = scaleLinear()
         .range([0, innerWidth])
-        .domain(range);
+        .domain(range)
 
     const y = scaleLinear()
         .range([innerHeight, 0])
-        .domain(extent(entries, d => d.value));
+        .domain(extent(entries, d => d.value))
 
-    const xAxis = axisBottom(x);
+    const xAxis = axisBottom(x)
 
-    const yAxis = axisLeft(y);
+    const yAxis = axisLeft(y)
 
     // define the line
     const valueLine = line()
         .curve(curveMonotoneX)
         .x(d => x(d.time))
-        .y(d => y(d.value));
+        .y(d => y(d.value))
 
 
-    const linePath = valueLine(entries);
+    const linePath = valueLine(entries)
 
     const zoom = d3Zoom()
         .scaleExtent([1, Infinity])
         .translateExtent([[0, 0], [innerWidth, innerHeight]])
         .extent([[0, 0], [innerWidth, innerHeight]])
-        .on("zoom", zoomed);
+        .on("zoom", zoomed)
 
     function zoomed() {
-        if (event.sourceEvent && event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-        var t = event.transform;
-        console.log(t);
-        const newRange = [...range];
-        newRange[0] = t.applyX(range[0]);
-        newRange[1] = t.applyX(range[1]);
+        if (event.sourceEvent && event.sourceEvent.type === "brush") return // ignore zoom-by-brush
+        var t = event.transform
+        console.log(t)
+        const newRange = [...range]
+        newRange[0] = t.applyX(range[0])
+        newRange[1] = t.applyX(range[1])
         //console.log(range);
-        console.log(newRange);
-        setRange(t.rescaleX(x).domain());
-        console.log(t.rescaleX(x).domain());
+        console.log(newRange)
+        setRange(t.rescaleX(x).domain())
+        console.log(t.rescaleX(x).domain())
         //setRange(t.rescalex(domain());
         //xFocus.domain(t.rescaleX(x).domain());
         //focus.select(".area").attr("d", area);
@@ -78,7 +78,7 @@ export default ({
     }
 
 
-    console.log(entries);
+    console.log(entries)
 
     return (
         <svg
@@ -102,5 +102,5 @@ export default ({
                 </clipPath>
             </defs>
         </svg>
-    );
+    )
 }

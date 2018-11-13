@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from 'redux'
 
-import workspace from './workspace';
+import workspace from './workspace'
 
 export default combineReducers({
     workspace
-});
+})

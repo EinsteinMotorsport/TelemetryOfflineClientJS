@@ -1,17 +1,9 @@
-import * as types from '../constants/ActionTypes';
+import * as types from '../constants/ActionTypes'
 
 const initialState = {
-    currentNode: {
-        direction: 'row',
-        first: 0,
-        second: {
-            direction: 'column',
-            first: 1,
-            second: 2,
-        },
-    },
-    tiles: [{}, {}, {}]
-};
+    currentNode: null,
+    tiles: []
+}
 
 const workspace = (state = initialState, action) => {
     switch (action.type) {
@@ -19,11 +11,18 @@ const workspace = (state = initialState, action) => {
             return {
                 ...state,
                 currentNode: action.currentNode
-            };
+            }
             
+        case types.SET_TILE:
+            const tiles = [...state.tiles]
+            tiles[action.index] = action.tile
+            return {
+                ...state,
+                tiles
+            }
         default:
-            return state;
+            return state
     }
-};
+}
 
-export default workspace;
+export default workspace

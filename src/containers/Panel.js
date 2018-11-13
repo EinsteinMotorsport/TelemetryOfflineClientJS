@@ -1,14 +1,14 @@
-import React from 'react';
-import dataManager from '../managers/dataManager';
-import OverviewGraph from '../components/OverviewGraph';
-import LineGraph from '../components/LineGraph';
+import React from 'react'
+import dataManager from '../managers/dataManager'
+import OverviewGraph from '../components/OverviewGraph'
+import LineGraph from '../components/LineGraph'
 
 export default class Panel extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             range: [0, 0]
-        };
+        }
     }
 
     setRange(newRange) {
@@ -16,14 +16,14 @@ export default class Panel extends React.Component {
             if (state.range[0] !== newRange[0] || state.range[1] !== newRange[1])
                 return {
                     range: newRange
-                };
-        });
+                }
+        })
     }
 
     render() {
-        const entries = dataManager.getData(2);
+        const entries = dataManager.getData(2)
         if (!entries)
-            return null;
+            return null
 
         return (
             <div style={{
@@ -33,6 +33,6 @@ export default class Panel extends React.Component {
                 {//<LineGraph channel={3} width={1000} height={600} range={this.state.range} setRange={this.setRange.bind(this)} />
                 }
             </div>
-        );
+        )
     }
 }
