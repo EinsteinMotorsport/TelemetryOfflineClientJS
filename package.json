@@ -27,7 +27,12 @@
         {
           "beforeStatementContinuationChars": "always"
         }
-      ]
+      ],
+      "jsx-quotes": ["warn", "prefer-double"],
+      "quotes": ["warn", "single", {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }]
     }
   },
   "browserslist": [

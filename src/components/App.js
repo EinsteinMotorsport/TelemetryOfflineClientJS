@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Workspace from '../containers/Workspace'
+import TopBar from '../containers/TopBar'
 
 const App = styled.div`
   height: 100vh;
@@ -10,7 +11,7 @@ const App = styled.div`
   flex-flow: column;
 `
 
-const TopBar = styled.div`
+const StyledTopBar = styled(TopBar)`
   height: 50px;
   background-color: orange;
 `
@@ -21,7 +22,7 @@ const StyledWorkspace = styled(Workspace)`
 
 export default () => (
   <App>
-    <TopBar></TopBar>
+    <StyledTopBar></StyledTopBar>
     <StyledWorkspace></StyledWorkspace>
   </App>
 )

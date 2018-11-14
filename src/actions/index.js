@@ -11,3 +11,9 @@ export const setTile = (index, tile) => ({
   index,
   tile
 })
+
+export const addTile = (tile = {}, path = null) => ({
+    type: types.ADD_TILE,
+    tile,
+    path
+})
