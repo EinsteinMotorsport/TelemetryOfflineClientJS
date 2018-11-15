@@ -1,4 +1,4 @@
 
-export const MOSAIC_CHANGE = 'MOSAIC_CHANGE'
-export const SET_TILE = 'SET_TILE'
+export const SET_TILE_POSITIONS = 'SET_TILE_POSITIONS'
+export const SET_TILE_SETTINGS = 'SET_TILE_SETTINGS'
 export const ADD_TILE = 'ADD_TILE'

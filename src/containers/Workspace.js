@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import 'react-mosaic-component/react-mosaic-component.css'
 import '@blueprintjs/core/lib/css/blueprint.css'
 
-import { setMosaic } from '../actions'
+import { setTilePositions } from '../actions'
 import Tile from './Tile'
 
 const StyledWorkspace = styled.div`
@@ -26,24 +26,21 @@ const Workspace = (props) => (
         <StyledMosaic
             renderTile={(id, path) => <Tile tileId={id} path={path} />}
             zeroStateView={<MosaicZeroState />}
-            value={props.currentNode}
-            onChange={props.setMosaic}
+            value={props.tilePositions}
+            onChange={props.setTilePositions}
             className={"mosaic-blueprint-theme"}
             resize={{
-                onRelease: (...dings) => console.log(dings),
+                onRelease: (...dings) => console.log(dings)
             }}
         />
     </StyledWorkspace>
 )
 
-const mapStateToProps = state => {
-    return {
-        currentNode: state.workspace.currentNode,
-        tiles: state.workspace.tiles
-    }
-}
+const mapStateToProps = state => ({
+    tilePositions: state.workspace.tilePositions
+})
 
-const mapDispatchToProps = { setMosaic }
+const mapDispatchToProps = { setTilePositions }
 
 export default connect(
     mapStateToProps,

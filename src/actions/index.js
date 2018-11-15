@@ -1,19 +1,18 @@
 import * as types from '../constants/ActionTypes'
 
-// TODO Name
-export const setMosaic = currentNode => ({
-  type: types.MOSAIC_CHANGE,
-  currentNode: currentNode
+export const setTilePositions = tilePositions => ({
+  type: types.SET_TILE_POSITIONS,
+  tilePositions
 })
 
-export const setTile = (index, tile) => ({
-  type: types.SET_TILE,
+export const setTileSettings = (index, value) => ({
+  type: types.SET_TILE_SETTINGS,
   index,
-  tile
+  value
 })
 
-export const addTile = (tile = {}, path = null) => ({
+export const addTile = (tileSettings = {}, path = null) => ({
     type: types.ADD_TILE,
-    tile,
+    tileSettings,
     path
 })

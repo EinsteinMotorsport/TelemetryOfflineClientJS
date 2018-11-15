@@ -9,8 +9,8 @@ import {
 import * as types from '../constants/ActionTypes'
 
 const initialState = {
-    currentNode: null,
-    tiles: []
+    tilePositions: null,
+    tileSettings: []
 }
 
 const generateId = tiles => {
@@ -21,20 +21,20 @@ const generateId = tiles => {
 }
 
 const addTile = (state, action) => {
-    const id = generateId(state.tiles)
-    const tiles = [...state.tiles]
-    tiles[id] = action.tile
-    if (state.currentNode == null) {
+    const id = generateId(state.tileSettings)
+    const tileSettings = [...state.tileSettings]
+    tileSettings[id] = action.tileSettings
+    if (state.tilePositions == null) {
         return {
             ...state,
-            tiles,
-            currentNode: id
+            tileSettings,
+            tilePositions: id
         }
     }
     // Größtenteils übernommen von https://github.com/palantir/react-mosaic/blob/25d29c20bcbf62161c873f3af7ef5addb623f297/demo/ExampleApp.tsx#L126
-    const path = action.path != null ? action.path : getPathToCorner(state.currentNode, Corner.TOP_RIGHT)
-    const parent = getNodeAtPath(state.currentNode, path.slice(0, -1))
-    const destination = getNodeAtPath(state.currentNode, path)
+    const path = action.path != null ? action.path : getPathToCorner(state.tilePositions, Corner.TOP_RIGHT)
+    const parent = getNodeAtPath(state.tilePositions, path.slice(0, -1))
+    const destination = getNodeAtPath(state.tilePositions, path)
     const direction = parent ? getOtherDirection(parent.direction) : 'row'
     let first
     let second
@@ -45,7 +45,7 @@ const addTile = (state, action) => {
         first = id
         second = destination
     }
-    const currentNode = updateTree(state.currentNode, [{
+    const tilePositions = updateTree(state.tilePositions, [{
         path,
         spec: {
             $set: {
@@ -57,25 +57,25 @@ const addTile = (state, action) => {
     }])
     return {
         ...state,
-        tiles,
-        currentNode
+        tileSettings,
+        tilePositions
     }
 }
 
 const workspace = (state = initialState, action) => {
     switch (action.type) {
-        case types.MOSAIC_CHANGE:
+        case types.SET_TILE_POSITIONS:
             return {
                 ...state,
-                currentNode: action.currentNode
+                tilePositions: action.tilePositions
             }
 
-        case types.SET_TILE:
-            const tiles = [...state.tiles]
-            tiles[action.index] = action.tile
+        case types.SET_TILE_SETTINGS:
+            const tileSettings = [...state.tileSettings]
+            tileSettings[action.index] = action.value
             return {
                 ...state,
-                tiles
+                tileSettings
             }
         case types.ADD_TILE:
             return addTile(state, action)

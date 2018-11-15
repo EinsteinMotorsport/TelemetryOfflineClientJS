@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 
 import Test from '../components/Test'
 
-const Tile = ({ tileId, path, tiles }) => {
-    const tile = tiles[tileId]
+const Tile = ({ tileId, path, tileSettings }) => {
+    const tile = tileSettings[tileId]
     return (
         <MosaicWindow path={path} /*createNode={createNode}*/ title={tile.title}>
             <Test {...tile.props}></Test>
@@ -15,11 +15,9 @@ const Tile = ({ tileId, path, tiles }) => {
     )
 }
 
-const mapStateToProps = state => {
-    return {
-        tiles: state.workspace.tiles
-    }
-}
+const mapStateToProps = state => ({
+    tileSettings: state.workspace.tileSettings
+})
 
 const mapDispatchToProps = {}
 
