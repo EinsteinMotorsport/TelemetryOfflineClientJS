@@ -1,44 +1,80 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# TelemetryOfflineClientJS
 
-## Available Scripts
+## Ausprobieren
+* Man braucht NodeJS mit NPM
+* `npm install`
+* `npm start`
+* Chrome müsste sich öffnen
 
-In the project directory, you can run:
+## Konzept
+* Workspace enthält beliebig viele Tiles, die frei anordbar sind. Für jedes Tile ist auswählbar, welche Art von Graph, Channel, Tabelle etc. angezeigt werden soll
+* Global wird ein Zeit-Ausschnit ausgewählt in Übersichtsgraph oder Tabelle mit Rundenangaben
+* Beim Bewegen der Maus über einen Graph, wird ein Fadenkreuz an der ensprechend vorgegebenen X-Position auf allen Graphen angezeigt
+* Dunkles Einstein-Styling
 
-### `npm start`
+## Struktur
+* React zusammen mit Redux
+    * React ist eine UI-Lib, mit denen man Components definieren und weiderverwenden kann und kümmert sich um das Updaten der Components, wenn sich die Daten ändern: https://reactjs.org
+    * Redux verwaltet den State der App global, sodass man diesen speichern kann und damit verschiedene Ansichten speichern kann und später wieder laden: https://redux.js.org
+* Aufteilung in Components, die keinen State haben, sondern nur von den Eltern mitgeteilt bekommen, welche Daten sie denn anzeigen sollen, und Containers, die einen State haben bzw. von Redux einen State bekommen, aber dafür nichts direkt darstellen: https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0
+* Redux-State enthält:
+    * Position und Größe der Tiles
+    * Einstellungen der Tiles
+    * Ausgewählter Ausschnit
+    * Zeitpunkt, der gerade mit der Maus ausgewählt ist?
+    * Eigentlich so ziemlich jeden State den es in der App gibt
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Libs
+* Das Projekt wurde erstellt mit Create-React-App. Das richtet die ganzen Buildtools und Debugging-Sachen ein: https://github.com/facebook/create-react-app
+* React: https://reactjs.org
+* Redux: https://redux.js.org
+* Styled-Components: Um den CSS-Style festzulegen innerhalb einer Component, [siehe unten](#Styled-components)
+* React-Mosaic für die Anordnung und das dragen und droppen der Tiles: https://github.com/palantir/react-mosaic
+* D3: Zum Graph malen: https://d3js.org
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## Codestyle
+* Eslint überprüft den Style. Gibts für alle möglichen IDEs ein Plugin, das Verstöße dann gleich anzeigt
+* Keine Semikolons. Ja, richtig, keine Semikolons: https://mislav.net/2010/05/semicolons/
+* Single quotes '
+* Und alles mögliche andere
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Paar Ideen
+* AsynIterator für Datensätze. Diese werden immer blockweise aus der Datei gelesen bzw. aus mehreren Dateien und nur der gerade benötigte Teil wird (irgendwie) im Speicher gehalten?
+* Globaler ausgewählter Zeitpunkt. Wenn über ein Diagramm mit der Maus gefahren wird, soll es bei allen anderen Diagrammen auch gehighlightet werden
+* DataManager mit Funktion die alle Werte innerhalb eines Zeitintervalls zurückgibt (als AsyncIterator?)
+* Evtl. doch ChartJS statt D3?
 
-### `npm run build`
+## TODOs
+* Provider für Daten
+* Löschen von TileSettings
+* Entscheidungen dokumentieren
+* Resourcen für JSX und ES2015+
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Entscheidungen
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+### Styling
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Styled-components
+* https://www.styled-components.com
+* Größte Community
+* Syntax wie normales CSS
+* Style des Components an gleicher Stelle wie Componentdefinition selbst
+* Weitere Auflösung der Seperation of Concerns zwischen CSS und JS
 
-### `npm run eject`
+#### Aphrodite
+* Leicht andere Syntax wie normales CSS, da als JS Objekt geschrieben
+* Mehr Code-Overhead bei Benutzung durch className={css(styles.…)}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#### Emotion
+* Ähnlich wie Styled-components
+* Kleinere Community
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### styled-jsx
+* Eher unübersichtliche Syntax
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Links
+* Thinking in React: https://reactjs.org/docs/thinking-in-react.html
+* WebSockets haben eingebautes Framing: https://stackoverflow.com/a/16947118/7465253
+* D3 Example: https://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172
+* D3 API: https://github.com/d3/d3/blob/master/API.md
