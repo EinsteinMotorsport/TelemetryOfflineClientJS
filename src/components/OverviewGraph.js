@@ -19,7 +19,7 @@ export default ({
     const entries = dataManager.getData(channel)
     if (!entries)
         return null
-    
+
     if (!range) {
         setRange(extent(entries, d => d.time))
         console.log("set range")

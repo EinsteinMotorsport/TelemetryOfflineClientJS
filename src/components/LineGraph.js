@@ -80,6 +80,8 @@ export default ({
 
     console.log(entries)
 
+    const id = 'clipid' + Math.floor(Math.random() * 1e9)
+
     return (
         <svg
             className="container"
@@ -90,14 +92,14 @@ export default ({
             <g transform={"translate(" + margin.left + "," + margin.top + ")"}>
 
                 {/* ADD: our two axes' groups, and when their DOM nodes mount, select them, and "call" (render into them) the x and y axes respectively. */}
-                <path d={linePath} className="line" style={{ clipPath: "url(#clip)" }} />
+                <path d={linePath} className="line" style={{ clipPath: "url(" + id + ")" }} />
                 <g className="xAxis" transform={"translate(0," + innerHeight + ")"} ref={node => select(node).call(xAxis)} />
                 <g className="yAxis" ref={node => select(node).call(yAxis)} />
             </g>
             <rect className={"zoom"} width={innerWidth} height={innerHeight} transform={"translate(" + margin.left + "," + margin.top + ")"} ref={node => select(node).call(zoom)}></rect>
 
             <defs>
-                <clipPath id={"clip"}>
+                <clipPath id={id}>
                     <rect width={innerWidth} height={innerHeight} />
                 </clipPath>
             </defs>

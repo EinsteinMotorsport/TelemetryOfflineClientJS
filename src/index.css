@@ -13,6 +13,7 @@ code {
     monospace;
 }
 
+/* TODO über styled-components integrieren */
 .line {
   fill: none;
   stroke: blue;

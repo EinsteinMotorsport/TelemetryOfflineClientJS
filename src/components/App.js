@@ -21,8 +21,8 @@ const StyledWorkspace = styled(Workspace)`
 `
 
 export default () => (
-  <App>
-    <StyledTopBar></StyledTopBar>
-    <StyledWorkspace></StyledWorkspace>
-  </App>
+    <App>
+        <StyledTopBar></StyledTopBar>
+        <StyledWorkspace></StyledWorkspace>
+    </App>
 )

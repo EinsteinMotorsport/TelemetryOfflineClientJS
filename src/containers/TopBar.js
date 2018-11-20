@@ -18,6 +18,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { addTile }
 
+/**
+ * Leiste am oberen Rand
+ */
 export default connect(
     mapStateToProps,
     mapDispatchToProps

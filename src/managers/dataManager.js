@@ -73,6 +73,6 @@ async function init() {
     console.log(data)
 }
 
-export default { getData, getChannelDefinitions } 
+export default { getData, getChannelDefinitions }
 
 init()
