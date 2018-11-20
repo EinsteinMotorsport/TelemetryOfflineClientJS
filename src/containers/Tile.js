@@ -1,9 +1,14 @@
 import React from 'react'
 import { MosaicWindow } from 'react-mosaic-component'
 import { connect } from 'react-redux'
+import styled from 'styled-components'
 
 import OverviewGraph from '../components/OverviewGraph'
 import LineGraph from '../components/LineGraph'
+
+const StyledBody = styled.div`
+    background-image: linear-gradient(#333333, #222222);
+`
 
 const tileTypes = {
     LineGraph,
@@ -15,7 +20,9 @@ const Tile = ({ tileId, path, size, tileSettings }) => {
     return (
         <MosaicWindow path={path} title={`Tile ${tileId}: ${size.width}x${size.height}; Channel: ${tileSettings.channel}`} >
             {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
-            <TileType channel={tileSettings.channel} width={size.width - 6} height={size.height - 6 - 30} range={[0, 40]} setRange={() => { }} {...tileSettings.props} />
+            <StyledBody>
+                <TileType channel={tileSettings.channel} width={size.width - 6} height={size.height - 6 - 30} range={[0, 40]} setRange={() => { }} {...tileSettings.props} />
+            </StyledBody>
         </MosaicWindow>
     )
 }
