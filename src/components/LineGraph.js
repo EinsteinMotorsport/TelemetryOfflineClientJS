@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 
 import dataManager from '../managers/dataManager'
 import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from 'd3'
@@ -9,14 +10,22 @@ import { line, curveMonotoneX } from 'd3-shape'
 import { max, extent } from 'd3-array'
 import { brushX } from 'd3-brush'
 
+const StyledPath = styled.path`
+    stroke: ${props => props.color};
+    fill: none;
+    stroke-width: 2px;
+`
+
 export default ({
     channel,
     width,
     height,
     range,
-    setRange
+    setRange,
+    value
 }) => {
-    const entries = dataManager.getData(channel)
+    //const entries = dataManager.getData(channel)
+    const entries = value.channelData[channel]
     if (!entries)
         return null
 
@@ -29,7 +38,7 @@ export default ({
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
-    console.log(range)
+    //console.log(range)
 
     // set the ranges
     const x = scaleLinear()
@@ -62,14 +71,14 @@ export default ({
     function zoomed() {
         if (event.sourceEvent && event.sourceEvent.type === "brush") return // ignore zoom-by-brush
         var t = event.transform
-        console.log(t)
+        //console.log(t)
         const newRange = [...range]
         newRange[0] = t.applyX(range[0])
         newRange[1] = t.applyX(range[1])
         //console.log(range);
-        console.log(newRange)
+        //console.log(newRange)
         setRange(t.rescaleX(x).domain())
-        console.log(t.rescaleX(x).domain())
+        //console.log(t.rescaleX(x).domain())
         //setRange(t.rescalex(domain());
         //xFocus.domain(t.rescaleX(x).domain());
         //focus.select(".area").attr("d", area);
@@ -78,9 +87,9 @@ export default ({
     }
 
 
-    console.log(entries)
+    //console.log(entries)
 
-    const id = 'clipid' + Math.floor(Math.random() * 1e9)
+    const id = 'clipid' + Math.floor(Math.random() * 1e9) // TODO stable id
 
     return (
         <svg
@@ -92,7 +101,7 @@ export default ({
             <g transform={"translate(" + margin.left + "," + margin.top + ")"}>
 
                 {/* ADD: our two axes' groups, and when their DOM nodes mount, select them, and "call" (render into them) the x and y axes respectively. */}
-                <path d={linePath} className="line" style={{ clipPath: "url(" + id + ")" }} />
+                <StyledPath d={linePath} style={{ clipPath: "url(" + id + ")" }} color={['green', 'blue', 'orange', 'yellow', 'lime'][channel % 5]} />
                 <g className="xAxis" transform={"translate(0," + innerHeight + ")"} ref={node => select(node).call(xAxis)} />
                 <g className="yAxis" ref={node => select(node).call(yAxis)} />
             </g>

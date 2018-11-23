@@ -14,12 +14,6 @@ code {
 }
 
 /* TODO über styled-components integrieren */
-.line {
-  fill: none;
-  stroke: blue;
-  stroke-width: 2px;
-}
-
 .zoom {
   cursor: move;
   fill: none;

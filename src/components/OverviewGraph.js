@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'styled-components'
 
 import dataManager from '../managers/dataManager'
 import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from 'd3'
@@ -9,14 +10,22 @@ import { line, curveMonotoneX } from 'd3-shape'
 import { max, extent } from 'd3-array'
 import { brushX } from 'd3-brush'
 
+const StyledPath = styled.path`
+    stroke: ${props => props.color};
+    fill: none;
+    stroke-width: 2px;
+`
+
 export default ({
     channel,
     width,
     height,
     range,
-    setRange
+    setRange,
+    value
 }) => {
-    const entries = dataManager.getData(channel)
+    //const entries = dataManager.getData(channel)
+    const entries = value.channelData[channel]
     if (!entries)
         return null
 
@@ -31,10 +40,10 @@ export default ({
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
-    // set the ranges
+    // set the rangess
     const x = scaleLinear()
         .range([0, innerWidth])
-        .domain(extent(entries, d => d.time))
+        .domain([0, value.totalDuration])
 
     const y = scaleLinear()
         .range([innerHeight, 0])
@@ -87,7 +96,7 @@ export default ({
     }*/
 
 
-    console.log(entries)
+    //console.log(entries)
 
     return (
         <svg
@@ -99,7 +108,7 @@ export default ({
             <g transform={"translate(" + margin.left + "," + margin.top + ")"}>
 
                 {/* ADD: our two axes' groups, and when their DOM nodes mount, select them, and "call" (render into them) the x and y axes respectively. */}
-                <path d={linePath} className="line" />
+                <StyledPath d={linePath} className="line" color={['green', 'blue', 'orange', 'yellow', 'lime'][channel % 5]}/>
                 <g className="xAxis" transform={"translate(0," + innerHeight + ")"} ref={node => select(node).call(xAxis)} />
                 <g className={"brush"} ref={node => select(node).call(brush).call(brush.move, range.map(x))}></g>
             </g>

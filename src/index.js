@@ -6,6 +6,7 @@ import { createStore } from 'redux'
 import * as serviceWorker from './serviceWorker'
 import App from './components/App'
 import rootReducer from './reducers'
+import DataProvider from './containers/DataProvider'
 
 import './index.css'
 
@@ -13,9 +14,11 @@ const store = createStore(rootReducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 
 ReactDOM.render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
+    <DataProvider>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </DataProvider>,
     document.getElementById('root')
 )
 
