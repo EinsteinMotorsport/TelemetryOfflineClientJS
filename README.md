@@ -11,6 +11,7 @@
 * Global wird ein Zeit-Ausschnit ausgewählt in Übersichtsgraph oder Tabelle mit Rundenangaben
 * Beim Bewegen der Maus über einen Graph, wird ein Fadenkreuz an der ensprechend vorgegebenen X-Position auf allen Graphen angezeigt
 * Dunkles Einstein-Styling
+* **Farbverläufe**
 
 ## Struktur
 * React zusammen mit Redux
@@ -33,10 +34,11 @@
 * D3: Zum Graph malen: https://d3js.org
 
 ## Codestyle
-* Eslint überprüft den Style. Gibts für alle möglichen IDEs ein Plugin, das Verstöße dann gleich anzeigt
+* Eslint überprüft den Style. Es gibt für alle möglichen IDEs ein Plugin, das Verstöße dann gleich anzeigt
 * Keine Semikolons. Ja, richtig, keine Semikolons: https://mislav.net/2010/05/semicolons/
 * Single quotes '
-* Und alles mögliche andere
+* JSX mit HTML-like Code in JS: https://reactjs.org/docs/introducing-jsx.html
+* Und alles mögliche andere. Bis auf wenige Ausnahmen ist das der Codestyle von 'react-app'. Siehe `package.json`
 
 
 ## Paar Ideen
@@ -46,10 +48,9 @@
 * Evtl. doch ChartJS statt D3?
 
 ## TODOs
-* Provider für Daten
 * Löschen von TileSettings
 * Entscheidungen dokumentieren
-* Resourcen für JSX und ES2015+
+* TypeScript
 
 ## Entscheidungen
 
@@ -74,6 +75,9 @@
 * Eher unübersichtliche Syntax
 
 ## Links
+* Neue JS-Features seit ES2015
+    * Cheatsheet: https://devhints.io/es6
+    * Ausführlicher: https://babeljs.io/docs/en/learn/
 * Thinking in React: https://reactjs.org/docs/thinking-in-react.html
 * WebSockets haben eingebautes Framing: https://stackoverflow.com/a/16947118/7465253
 * D3 Example: https://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172

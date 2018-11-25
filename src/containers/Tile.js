@@ -39,7 +39,7 @@ const mapStateToProps = (state, componentProps) => ({
 const mapDispatchToProps = {}
 
 /**
- * Auf dem Workspace verschiebare Kachel
+ * Auf dem Workspace verschiebbare Kachel
  * Enthält Graphen, Tabellen etc.
  */
 export default connect(
