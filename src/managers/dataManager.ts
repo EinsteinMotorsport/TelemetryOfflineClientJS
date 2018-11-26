@@ -63,7 +63,7 @@ function generateTestParams(channel: ChannelDefinition) {
         min = 0
         max = 1
     }
-    let volatility = 1.2 ** (Math.random() * 25)
+    let volatility = 1.15 ** (Math.random() * 25)
     return {
         min,
         max,

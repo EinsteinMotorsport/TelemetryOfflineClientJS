@@ -23,3 +23,13 @@ export const addTile = (tileSettings = { type: Math.random() < 0.5 ? 'LineGraph'
     tileSettings,
     path
 })
+
+export const setCursorX = (cursorX) => ({
+    type: types.SET_CURSOR_X,
+    cursorX
+})
+
+export const setRange = (range) => ({
+    type: types.SET_RANGE,
+    range
+})

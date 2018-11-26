@@ -46,6 +46,8 @@
 * Globaler ausgewählter Zeitpunkt. Wenn über ein Diagramm mit der Maus gefahren wird, soll es bei allen anderen Diagrammen auch gehighlightet werden
 * DataManager mit Funktion die alle Werte innerhalb eines Zeitintervalls zurückgibt (als AsyncIterator?)
 * Evtl. doch ChartJS statt D3?
+* Graphen speichern; mit alten Daten vergleichen; gerade für Tets vermutlich sinnvoll (Credits: Lenni)
+* Für LiveClient: Warnungen bei Grenzwertübrschreitung. In Offline dann auch Warndreieck an dieser Stelle anzeigen?
 
 ## TODOs
 * Löschen von TileSettings

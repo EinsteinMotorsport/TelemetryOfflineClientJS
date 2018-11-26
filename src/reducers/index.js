@@ -7,7 +7,9 @@
 import { combineReducers } from 'redux'
 
 import workspace from './workspace'
+import selection from './selection'
 
 export default combineReducers({
-    workspace
+    workspace,
+    selection
 })

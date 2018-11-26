@@ -1,114 +1,85 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import dataManager from '../managers/dataManager'
-import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from 'd3'
-import { select, event } from 'd3-selection'
+import { select, mouse } from 'd3-selection'
 import { axisBottom, axisLeft, } from 'd3-axis'
 import { scaleLinear } from 'd3-scale'
 import { line, curveMonotoneX } from 'd3-shape'
-import { max, extent } from 'd3-array'
-import { brushX } from 'd3-brush'
+import { extent } from 'd3-array'
+import { bisector } from 'd3-array'
 
 const StyledPath = styled.path`
     stroke: ${props => props.color};
     fill: none;
     stroke-width: 2px;
+    clip-path: url(#${props => props.clipId});
+`
+
+const StyledAxis = styled.g`
+    color: #ffffff;
 `
 
 export default ({
-    channel,
+    id,
     width,
     height,
     range,
-    setRange,
-    value
+    dataPoints,
+    cursorX,
+    setCursorX
 }) => {
-    //const entries = dataManager.getData(channel)
-    const entries = value.channelData[channel]
-    if (!entries)
-        return null
-
-    if (!range)
-        return null
-
-
-    // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 20, left: 40 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom
 
-    //console.log(range)
-
-    // set the ranges
     const x = scaleLinear()
         .range([0, innerWidth])
         .domain(range)
 
     const y = scaleLinear()
         .range([innerHeight, 0])
-        .domain(extent(entries, d => d.value))
+        .domain(extent(dataPoints, d => d.value))
 
     const xAxis = axisBottom(x)
+        .ticks(15, '4s')
+        .tickSize(6)
 
     const yAxis = axisLeft(y)
+        .ticks(7, '3s')
 
-    // define the line
     const valueLine = line()
         .curve(curveMonotoneX)
         .x(d => x(d.time))
         .y(d => y(d.value))
 
+    const linePath = valueLine(dataPoints)
 
-    const linePath = valueLine(entries)
-
-    const zoom = d3Zoom()
-        .scaleExtent([1, Infinity])
-        .translateExtent([[0, 0], [innerWidth, innerHeight]])
-        .extent([[0, 0], [innerWidth, innerHeight]])
-        .on("zoom", zoomed)
-
-    function zoomed() {
-        if (event.sourceEvent && event.sourceEvent.type === "brush") return // ignore zoom-by-brush
-        var t = event.transform
-        //console.log(t)
-        const newRange = [...range]
-        newRange[0] = t.applyX(range[0])
-        newRange[1] = t.applyX(range[1])
-        //console.log(range);
-        //console.log(newRange)
-        setRange(t.rescaleX(x).domain())
-        //console.log(t.rescaleX(x).domain())
-        //setRange(t.rescalex(domain());
-        //xFocus.domain(t.rescaleX(x).domain());
-        //focus.select(".area").attr("d", area);
-        //focus.select(".axis--x").call(xAxis);
-        //select(".brush").call(brush.move, xFocus.range().map(t.invertX, t));
+    const updateCursorX = (node) => {
+        const coords = mouse(node)
+        const xPos = x.invert(coords[0] - margin.left)
+        setCursorX(xPos)
     }
 
 
-    //console.log(entries)
+    const clipId = 'lineGraph-clipid' + id
 
-    const id = 'clipid' + Math.floor(Math.random() * 1e9) // TODO stable id
+    const bisect = bisector(function(d) { return d.time; }).left
+    const index = bisect(dataPoints, cursorX)
+    const before = dataPoints[index - 1]
+    const after = dataPoints[index]
+    const item = Math.abs(before.time - cursorX) < Math.abs(after.time - cursorX) ? before : after
 
     return (
-        <svg
-            className="container"
-            height={height}
-            width={width}
-        >
-
-            <g transform={"translate(" + margin.left + "," + margin.top + ")"}>
-
-                {/* ADD: our two axes' groups, and when their DOM nodes mount, select them, and "call" (render into them) the x and y axes respectively. */}
-                <StyledPath d={linePath} style={{ clipPath: "url(" + id + ")" }} color={['green', 'blue', 'orange', 'yellow', 'lime'][channel % 5]} />
-                <g className="xAxis" transform={"translate(0," + innerHeight + ")"} ref={node => select(node).call(xAxis)} />
-                <g className="yAxis" ref={node => select(node).call(yAxis)} />
+        <svg height={height} width={width} ref={node => select(node).on('mousemove', updateCursorX.bind(null, node))}>
+            <g transform={`translate(${margin.left}, ${margin.top})`}>
+                <StyledPath d={linePath} color={'orange'} clipId={clipId} />
+                <StyledAxis transform={`translate(0,${innerHeight})`} ref={node => select(node).call(xAxis)} />
+                <StyledAxis ref={node => yAxis(select(node))} />
+                <circle cx={x(item.time)} cy={y(item.value)} r={5} />
             </g>
-            <rect className={"zoom"} width={innerWidth} height={innerHeight} transform={"translate(" + margin.left + "," + margin.top + ")"} ref={node => select(node).call(zoom)}></rect>
 
             <defs>
-                <clipPath id={id}>
+                <clipPath id={clipId}>
                     <rect width={innerWidth} height={innerHeight} />
                 </clipPath>
             </defs>
