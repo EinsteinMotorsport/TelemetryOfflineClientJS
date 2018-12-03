@@ -11,7 +11,48 @@
 * Global wird ein Zeit-Ausschnit ausgewählt in Übersichtsgraph oder Tabelle mit Rundenangaben
 * Beim Bewegen der Maus über einen Graph, wird ein Fadenkreuz an der ensprechend vorgegebenen X-Position auf allen Graphen angezeigt
 * Dunkles Einstein-Styling
+* Alle 20 ms neuer DataPoint bei ca. 200 Channels und muss eine Stunde an Aufzeichnung unterstützen => 50 * 3600 = 180.000 pro Channel => 36.000.000 DataPoints insgesamt => Mit je 2 Numbers mit je 8 Bytes: 576 MB (ohne Overhead). Laut kurzem Test mit Memory Snapshot ca. 650 MB
 * **Farbverläufe**
+
+### Tile-Settings-Popup
+* Öffnen mit Rechtsklick oder Knopf in Titelzeile des Tiles
+* Je nach Tile-Typ und anderen Einstellungen werden Einstellungen angezeigt oder ausgeblendet
+* Suchen/Filtern der Einstellungen
+* Einstellungstypen
+    * Channel
+    * Dropdown-Menü
+    * Farbe
+    * Checkbox
+
+### Tile-Typen
+
+#### LineGraph
+* Klick auf Channel-Namen öffnet Popup zum Setzen des Channels
+* Rein und Raußzoomen durch Scrollen
+* Bewegen durch Ziehen
+* Settings
+    * overview: true | false
+    * channel
+    * color
+
+#### ValueTable
+* Tabelle mit Werten an Cursor-Position
+* Channels direkt in Tabelle bearbeitbar
+* Plus-Knopf oben zum Zeile hinzufügen
+* X zum Löschen in jeder Zeile
+* Settings:
+    * 
+* Aufsplitten in ein Component pro Zeile
+
+#### ValueIndicator
+* Leuchtet in eingestellter Farbe
+* Settings
+    * Für jeden ausgewählten Channel:
+        * Farbe
+        * Diskret oder stetig (ja das sind coole Wörter)
+            * Diskret: Wenn Schwelle überschritten => Leuchtet
+            * Stetig: Je nach Wert leuchtet es heller oder dunkler
+* Aufsplitten in ein Component pro Indicator
 
 ## Struktur
 * React zusammen mit Redux

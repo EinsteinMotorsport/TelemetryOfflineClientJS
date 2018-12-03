@@ -3,42 +3,67 @@ import { MosaicWindow } from 'react-mosaic-component'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 
-import OverviewGraph from '../components/OverviewGraph'
-import LineGraph from '../components/LineGraphOld'
+import TestTile from '../components/TestTile'
+import LineGraph from '../components/LineGraph/'
+import ValueTable from '../components/ValueTable'
 import DataContext from '../DataContext'
-import TestGraph from '../components/TestGraph'
-import Table from '../components/Table'
-import { setCursorX } from '../actions/index'
+
+import { 
+    setCursorX, 
+    toggleSettingsPopUp,
+    setTileSettings,
+    setRange
+} from '../actions/index'
 
 const StyledBody = styled.div`
     background-image: linear-gradient(#333333, #222222);
+    color: #ffffff;
+    height: 100%;
 `
 
 const tileTypes = {
-    LineGraph: TestGraph,
-    OverviewGraph: Table
+    TestTile,
+    LineGraph,
+    ValueTable
 }
 
-const Tile = ({ tileId, path, size, tileSettings, cursorX, setCursorX, range }) => {
-    const TileType = tileTypes[tileSettings.type] || (() => <div>Error</div>)
+const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleSettingsPopUp, setTileSettings, setRange }) => {
+    const TileType = tileTypes[tileSettings.type] || (() => <div>Unknown TileType '{tileSettings.type}'</div>)
+    let tileProps
     return (
         <DataContext.Consumer>
             {data => (
+
                 // Da MosaicWindow shouldComponentUpdate() implementiert und nur neu rendert, wenn sich die props geändert haben, 
                 // müssen wir hier als Workaround alle relevanten Props auch noch dem MosaicWindow übergeben. So ein Scheiß. 
                 // Siehe https://github.com/palantir/react-mosaic/issues/65
-                <MosaicWindow path={path} title={`Tile ${tileId}: ${size.width}x${size.height}; Channel: ${tileSettings.channel}`} workaround={{
-                    tileId,
-                    size,
-                    tileSettings,
-                    cursorX,
-                    setCursorX,
-                    data,
-                    range
-                }} >
-                    {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
-                    <StyledBody>
-                        <TileType channel={tileSettings.channel} width={size.width - 6} height={size.height - 6 - 30} setRange={() => { }} value={data} id={'tile' + tileId} cursorX={cursorX} setCursorX={setCursorX} range={range} />
+                <MosaicWindow path={path} title={`Tile ${tileId}: ${size.width}x${size.height}`} additionalControls={<button onClick={() => toggleSettingsPopUp(tileId)}>Settings</button>}
+                    workaround={tileProps = {
+                        id: 'tile' + tileId,
+                        width: size.width - 6,
+                        height: size.height - 6 - 30,
+                        settings: tileSettings.settings,
+                        setSettings: (newSettings) => setTileSettings(tileId, {
+                            ...tileSettings,
+                            settings: newSettings
+                        }),
+                        selection: {
+                            ...selection,
+                            setRange,
+                            setCursorX
+                        },
+                        data: {
+                            channelDefinitions: data.channelDefinitions,
+                            totalDuration: data.totalDuration,
+                            channelData: data.channelData
+                        }
+                    }} >
+                    <StyledBody onContextMenu={event => {
+                        toggleSettingsPopUp(tileId)
+                        event.preventDefault()
+                    }}>
+                        {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
+                        <TileType {...tileProps} />
                     </StyledBody>
                 </MosaicWindow>
 
@@ -49,12 +74,14 @@ const Tile = ({ tileId, path, size, tileSettings, cursorX, setCursorX, range }) 
 
 const mapStateToProps = (state, componentProps) => ({
     tileSettings: state.workspace.tileSettings[componentProps.tileId],
-    cursorX: state.selection.cursorX,
-    range: state.selection.range
+    selection: state.selection
 })
 
 const mapDispatchToProps = {
-    setCursorX
+    setCursorX,
+    setRange,
+    toggleSettingsPopUp,
+    setTileSettings
 }
 
 /**

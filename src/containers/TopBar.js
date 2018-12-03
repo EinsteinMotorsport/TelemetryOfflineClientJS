@@ -11,7 +11,15 @@ const TopBar = ({
     range
 }) => (
         <div className={className}>
-            <button onClick={() => addTile()}>Neu</button>
+            <button onClick={() => {
+                const channel = Math.floor(Math.random() * 128) + 2
+                addTile({
+                    type: Math.random() < 0.5 ? 'LineGraph' : 'OverviewGraph',
+                    settings: {
+                        channel
+                    }
+                })
+            }}>Neu</button>
             <button onClick={() => setCursorX(Math.floor(Math.random() * 100))}>Set Cursor</button>
             <button onClick={() => setRange(range[1] > 50 ? [10, 20] : [10, range[1] + 10])}>Set Range</button>
         </div>

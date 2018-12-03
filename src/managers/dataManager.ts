@@ -58,7 +58,7 @@ function generateTestData({ timeInterval, count }: { timeInterval: number, count
 function generateTestParams(channel: ChannelDefinition) {
     data[channel.id] = []
     let min = (Math.random() - 0.5) * 10 ** (Math.random() * 16 - 8)
-    let max = 10 ** (Math.random() * 16) + min
+    let max = 10 ** (Math.random() * 8) + min
     if (channel.unit === 'Bool') {
         min = 0
         max = 1
@@ -112,9 +112,9 @@ function onChange(handler: () => void) {
 }
 
 async function init() {
-    const timeInterval = 0.05 // 20 data points per second
+    const timeInterval = 0.02 // DataPoint each 20 ms
     await loadChannelDefinitions('channelDefinitions.txt')
-    await generateTestData({ timeInterval, count: 2000 })
+    await generateTestData({ timeInterval, count: 5000 })
     console.log(channelDefinitions)
     console.log(data)
     triggerOnChange()

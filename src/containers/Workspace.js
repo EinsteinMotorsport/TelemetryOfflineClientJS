@@ -8,6 +8,7 @@ import 'react-mosaic-component/react-mosaic-component.css'
 
 import { setTilePositions } from '../actions'
 import Tile from './Tile'
+import TileSettingsPopUp from './TileSettingsPopUp';
 
 const StyledWorkspace = styled.div`
   background-color: grey;
@@ -90,12 +91,18 @@ class Workspace extends Component {
                         onRelease: (...dings) => console.log(dings)
                     }}
                 />
+                {this.props.settingsPopUp
+                    // key={...} sorgt dafür, dass eine neue Component-Instanz von TileSettingsPopUp generiert wird, wenn sich der Wert von key ändert
+                    // https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
+                    ? <TileSettingsPopUp tileId={this.props.settingsPopUp.tileId} key={this.props.settingsPopUp.tileId} />
+                    : null}
             </StyledWorkspace>)
     }
 }
 
 const mapStateToProps = state => ({
-    tilePositions: state.workspace.tilePositions
+    tilePositions: state.workspace.tilePositions,
+    settingsPopUp: state.workspace.settingsPopUp
 })
 
 const mapDispatchToProps = { setTilePositions }

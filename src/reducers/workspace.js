@@ -80,13 +80,26 @@ const workspace = (state = initialState, action) => {
 
         case types.SET_TILE_SETTINGS:
             const tileSettings2 = [...state.tileSettings]
-            tileSettings2[action.index] = action.value
+            tileSettings2[action.tileId] = action.value
             return {
                 ...state,
-                tileSettings2
+                tileSettings: tileSettings2
             }
         case types.ADD_TILE:
             return addTile(state, action)
+        case types.TOGGLE_SETTINGS_POP_UP:
+            if (!state.settingsPopUp || state.settingsPopUp.tileId !== action.tileId)
+                return {
+                    ...state,
+                    settingsPopUp: {
+                        tileId: action.tileId
+                    }
+                }
+            else
+                return {
+                    ...state,
+                    settingsPopUp: null
+                }
         default:
             return state
     }

@@ -12,16 +12,21 @@ export const setTilePositions = tilePositions => ({
     tilePositions
 })
 
-export const setTileSettings = (index, value) => ({
+export const setTileSettings = (tileId, value) => ({
     type: types.SET_TILE_SETTINGS,
-    index,
+    tileId,
     value
 })
 
-export const addTile = (tileSettings = { type: Math.random() < 0.5 ? 'LineGraph' : 'OverviewGraph', channel: Math.floor(Math.random() * 128) + 2 }, path = null) => ({
+export const addTile = (tileSettings, path = null) => ({
     type: types.ADD_TILE,
     tileSettings,
     path
+})
+
+export const toggleSettingsPopUp = (tileId) => ({
+    type: types.TOGGLE_SETTINGS_POP_UP,
+    tileId
 })
 
 export const setCursorX = (cursorX) => ({
