@@ -9,6 +9,7 @@ import Line from './Line'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
 import CrossHair from './CrossHair'
+import Brush from './Brush'
 
 export default ({
     id,
@@ -38,9 +39,6 @@ export default ({
         ...settings
     }
 
-    if (settings.overview)
-        range = [0, totalDuration]
-
     const dataPoints = channelData[settings.channel]
 
     if (!dataPoints) {
@@ -51,7 +49,7 @@ export default ({
 
     const xScaler = scaleLinear()
         .range([0, innerWidth])
-        .domain(range)
+        .domain(settings.overview ? [0, totalDuration] : range)
 
     const yScaler = scaleLinear()
         .range([innerHeight, 0])
@@ -74,6 +72,11 @@ export default ({
                 <XAxis xScaler={xScaler} innerHeight={innerHeight} />
                 <YAxis yScaler={yScaler} />
                 <CrossHair dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
+                {
+                    settings.overview ?
+                        <Brush range={range} setRange={setRange} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} /> :
+                        null
+                }
             </g>
 
             <defs>

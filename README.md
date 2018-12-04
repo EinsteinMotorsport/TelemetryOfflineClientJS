@@ -94,6 +94,7 @@
 * Löschen von TileSettings
 * Entscheidungen dokumentieren
 * TypeScript
+* Error Boundaries für einzelnes Tiles
 
 ## Entscheidungen
 
@@ -123,5 +124,6 @@
     * Ausführlicher: https://babeljs.io/docs/en/learn/
 * Thinking in React: https://reactjs.org/docs/thinking-in-react.html
 * WebSockets haben eingebautes Framing: https://stackoverflow.com/a/16947118/7465253
+* D3 Examples: https://bl.ocks.org/mbostock
 * D3 Example: https://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172
 * D3 API: https://github.com/d3/d3/blob/master/API.md
