@@ -21,16 +21,23 @@ const ValueTD = styled(StyledTD)`
     text-align: right;
 `
 
-export default ({
+/**
+ * Zeigt die Werte der ausgewählten Channels an Cursor-Position an
+ */
+const ValueTable = ({
     data: {
         channelData,
         channelDefinitions
     },
     selection: {
         cursorX
-    }
+    },
+    settings
 }) => {
-    // TODO das macht irgendwie Perf-Probleme
+    settings = { // default values
+        channels: [],
+        ...settings
+    }
     return (
         <StyledDiv>
             <StyledTable>
@@ -40,10 +47,11 @@ export default ({
                         <th colSpan={2}>Value</th>
                     </tr>
                     {
-                        channelDefinitions.map(channel => {
-                            const dataPoint = getClosestDataPoint(channelData[channel.id], cursorX)
+                        settings.channels.map(channelId => {
+                            const dataPoint = getClosestDataPoint(channelData[channelId], cursorX)
+                            const channel = channelDefinitions[channelId]
                             return (
-                                <tr key={channel.id}>
+                                <tr key={channelId}>
                                     <StyledTD>{channel.name}</StyledTD>
                                     <ValueTD>{dataPoint ? dataPoint.value.toFixed(3) : '–'}</ValueTD>
                                     <StyledTD>{channel.unit}</StyledTD>
@@ -56,3 +64,5 @@ export default ({
         </StyledDiv>
     )
 }
+
+export default ValueTable

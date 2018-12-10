@@ -8,7 +8,10 @@ const StyledLine = styled.line`
     stroke: #ffffff;
 `
 
-export default ({
+/**
+ * Zeigt Fadenkreuz an Mausposition an
+ */
+const CrossHair = ({
     dataPoints,
     xScaler,
     yScaler,
@@ -21,7 +24,8 @@ export default ({
 
     const closestPoint = getClosestDataPoint(dataPoints, x)
 
-    const posX = xScaler(closestPoint.time)
+    //const posX = xScaler(closestPoint.time) TODO
+    const posX = xScaler(x)
     const posY = yScaler(closestPoint.value)
 
     return (
@@ -32,3 +36,5 @@ export default ({
         </>
     )
 }
+
+export default CrossHair

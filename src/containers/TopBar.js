@@ -1,14 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { addTile, setCursorX, setRange, setTilePositions, setTileSettings } from '../actions'
+import { addTile, setCursorX, setDomainX, setTilePositions, setTileSettings } from '../actions'
 
 const TopBar = ({
     addTile,
     setCursorX,
     className,
-    setRange,
-    range,
+    setDomainX,
+    domainX,
     setTilePositions,
     setTileSettings
 }) => (
@@ -23,7 +23,7 @@ const TopBar = ({
                 })
             }}>Neu</button>
             <button onClick={() => setCursorX(Math.floor(Math.random() * 100))}>Set Cursor</button>
-            <button onClick={() => setRange(range[1] > 50 ? [10, 20] : [10, range[1] + 10])}>Set Range</button>
+            <button onClick={() => setDomainX(domainX[1] > 50 ? [10, 20] : [10, domainX[1] + 10])}>Set Range</button>
             <button onClick={() => {
                 setTilePositions({
                     direction: 'row',
@@ -49,7 +49,7 @@ const TopBar = ({
                 setTileSettings(0, {
                     type: 'ValueTable',
                     settings: {
-                        channel: 118
+                        channels: [118, 120, 24]
                     }
                 })
                 setTileSettings(1, {
@@ -87,11 +87,11 @@ const TopBar = ({
 
 const mapStateToProps = state => {
     return {
-        range: state.selection.range
+        domainX: state.selection.domainX
     }
 }
 
-const mapDispatchToProps = { addTile, setCursorX, setRange, setTilePositions, setTileSettings }
+const mapDispatchToProps = { addTile, setCursorX, setDomainX, setTilePositions, setTileSettings }
 
 /**
  * Leiste am oberen Rand

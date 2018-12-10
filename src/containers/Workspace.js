@@ -91,11 +91,11 @@ class Workspace extends Component {
                         onRelease: (...dings) => console.log(dings)
                     }}
                 />
-                {this.props.settingsPopUp
+                { this.props.settingsPopUp &&
                     // key={...} sorgt dafür, dass eine neue Component-Instanz von TileSettingsPopUp generiert wird, wenn sich der Wert von key ändert
                     // https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html#recommendation-fully-uncontrolled-component-with-a-key
-                    ? <TileSettingsPopUp tileId={this.props.settingsPopUp.tileId} key={this.props.settingsPopUp.tileId} />
-                    : null}
+                    <TileSettingsPopUp tileId={this.props.settingsPopUp.tileId} key={this.props.settingsPopUp.tileId} />
+                }
             </StyledWorkspace>)
     }
 }

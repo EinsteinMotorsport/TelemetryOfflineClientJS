@@ -12,7 +12,7 @@ import {
     setCursorX, 
     toggleSettingsPopUp,
     setTileSettings,
-    setRange
+    setDomainX
 } from '../actions/index'
 
 const StyledBody = styled.div`
@@ -27,7 +27,7 @@ const tileTypes = {
     ValueTable
 }
 
-const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleSettingsPopUp, setTileSettings, setRange }) => {
+const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleSettingsPopUp, setTileSettings, setDomainX }) => {
     const TileType = tileTypes[tileSettings.type] || (() => <div>Unknown TileType '{tileSettings.type}'</div>)
     let tileProps
     return (
@@ -49,7 +49,7 @@ const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleS
                         }),
                         selection: {
                             ...selection,
-                            setRange,
+                            setDomainX,
                             setCursorX
                         },
                         data: {
@@ -79,7 +79,7 @@ const mapStateToProps = (state, componentProps) => ({
 
 const mapDispatchToProps = {
     setCursorX,
-    setRange,
+    setDomainX,
     toggleSettingsPopUp,
     setTileSettings
 }

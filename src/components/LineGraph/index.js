@@ -5,21 +5,19 @@ import { scaleLinear } from 'd3-scale'
 
 import { extent } from 'd3-array'
 
-import Line from './Line'
-import XAxis from './XAxis'
-import YAxis from './YAxis'
+import Graph from './Graph'
 import CrossHair from './CrossHair'
 import Brush from './Brush'
 
-export default ({
+const LineGraph = ({
     id,
     width,
     height,
     settings,
     setSettings,
     selection: {
-        range,
-        setRange,
+        domainX,
+        setDomainX,
         cursorX,
         setCursorX
     },
@@ -47,13 +45,17 @@ export default ({
         )
     }
 
+    // Bei Overview-Graph gesamten Bereich anzeigen
+    const displayedDomainX = settings.overview ? [0, totalDuration] : domainX
+    const domainY = extent(dataPoints, d => d.value)
+
     const xScaler = scaleLinear()
         .range([0, innerWidth])
-        .domain(settings.overview ? [0, totalDuration] : range)
+        .domain(displayedDomainX)
 
     const yScaler = scaleLinear()
         .range([innerHeight, 0])
-        .domain(extent(dataPoints, d => d.value))
+        .domain(domainY)
 
 
     const updateCursorX = (node) => {
@@ -66,17 +68,12 @@ export default ({
     const clipId = 'lineGraph-clipid' + id
 
     return (
-        <svg height={height} width={width} ref={node => select(node).on('mousemove', updateCursorX.bind(null, node))}>
+        <svg height={height} width={width} ref={node => select(node).on('mousemove', updateCursorX.bind(null, node))}> { /* TODO direkt in JSX schreiben als onMouseMove */}
             <g transform={`translate(${margin.left}, ${margin.top})`}>
-                <Line dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} color={settings.color} clipId={clipId} />
-                <XAxis xScaler={xScaler} innerHeight={innerHeight} />
-                <YAxis yScaler={yScaler} />
+                <Graph dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={domainY} color={settings.color} />
                 <CrossHair dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
-                {
-                    settings.overview ?
-                        <Brush range={range} setRange={setRange} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} /> :
-                        null
-                }
+                { settings.overview && 
+                    <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} /> }
             </g>
 
             <defs>
@@ -87,3 +84,5 @@ export default ({
         </svg>
     )
 }
+
+export default LineGraph

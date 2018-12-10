@@ -24,17 +24,21 @@ export const addTile = (tileSettings, path = null) => ({
     path
 })
 
-export const toggleSettingsPopUp = (tileId) => ({
+export const toggleSettingsPopUp = tileId => ({
     type: types.TOGGLE_SETTINGS_POP_UP,
     tileId
 })
 
-export const setCursorX = (cursorX) => ({
+export const setCursorX = cursorX => ({
     type: types.SET_CURSOR_X,
     cursorX
 })
 
-export const setRange = (range) => ({
-    type: types.SET_RANGE,
-    range
+/**
+ * Setzt die X-Range, in D3 X-Domain genannt
+ * @param {*} range 
+ */
+export const setDomainX = domainX => ({
+    type: types.SET_DOMAIN_X,
+    domainX
 })

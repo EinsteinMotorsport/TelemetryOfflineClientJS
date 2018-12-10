@@ -7,7 +7,7 @@ const StyledAxis = styled.g`
     color: #ffffff;
 `
 
-export default ({
+const YAxis = ({
     yScaler
 }) => {
 
@@ -18,3 +18,5 @@ export default ({
         <StyledAxis ref={node => yAxis(select(node))} />
     )
 }
+
+export default YAxis

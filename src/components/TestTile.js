@@ -6,6 +6,9 @@ const Container = styled.div`
     height: 100%;
 `
 
+/**
+ * Zeigt testweise alle hier aufgeführte Props an
+ */
 export default (props) => {
     const struct = {
         id: null,
@@ -14,8 +17,8 @@ export default (props) => {
         settings: null,
         setSettings: null,
         selection: {
-            range: null,
-            setRange: null,
+            domainX: null,
+            setDomainX: null,
             cursorX: null,
             setCursorX: null
         },

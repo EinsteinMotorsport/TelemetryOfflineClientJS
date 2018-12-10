@@ -7,7 +7,7 @@ const StyledAxis = styled.g`
     color: #ffffff;
 `
 
-export default ({
+const XAxis = ({
     innerHeight,
     xScaler
 }) => {
@@ -20,3 +20,5 @@ export default ({
         <StyledAxis transform={`translate(0,${innerHeight})`} ref={node => select(node).call(xAxis)} />
     )
 }
+
+export default XAxis

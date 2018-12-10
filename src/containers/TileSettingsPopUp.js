@@ -26,7 +26,6 @@ const StyledTextarea = styled.textarea`
 class TileSettingsPopUp extends Component {
     constructor(props) {
         super(props)
-        console.log("jo was geth")
         this.state = {
             text: JSON.stringify(props.tileSettings[props.tileId], null, 4),
             valid: true

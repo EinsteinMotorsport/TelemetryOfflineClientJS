@@ -2,7 +2,7 @@ import * as types from '../constants/ActionTypes'
 
 const initialState = {
     cursorX: 4,
-    range: [10, 50]
+    domainX: [10, 50]
 }
 
 const selection = (state = initialState, action) => {
@@ -13,10 +13,10 @@ const selection = (state = initialState, action) => {
                 cursorX: action.cursorX
             }
 
-        case types.SET_RANGE:
+        case types.SET_DOMAIN_X:
             return {
                 ...state,
-                range: action.range
+                domainX: action.domainX
             }
         default:
             return state

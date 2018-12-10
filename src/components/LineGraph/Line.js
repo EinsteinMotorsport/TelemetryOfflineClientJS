@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { line, curveMonotoneX } from 'd3-shape'
+import { line, linear } from 'd3-shape'
 
 const StyledPath = styled.path`
     stroke: ${props => props.color};
@@ -9,7 +9,7 @@ const StyledPath = styled.path`
     clip-path: url(#${props => props.clipId});
 `
 
-export default ({
+const Line = ({
     dataPoints,
     xScaler,
     yScaler,
@@ -18,7 +18,6 @@ export default ({
 }) => {
 
     const valueLine = line()
-        .curve(curveMonotoneX)
         .x(d => xScaler(d.time))
         .y(d => yScaler(d.value))
 
@@ -28,3 +27,5 @@ export default ({
         <StyledPath d={linePath} color={color} clipId={clipId} />
     )
 }
+
+export default Line
