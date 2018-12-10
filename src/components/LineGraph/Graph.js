@@ -2,6 +2,8 @@ import React from 'react'
 
 import { scaleLinear } from 'd3-scale'
 
+import { getIndexBeforeX } from '../../util/'
+
 import Line from './Line'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
@@ -26,9 +28,12 @@ const Graph = ({
         .range([innerHeight, 0])
         .domain(domainY)
 
+        const from = Math.max(getIndexBeforeX(dataPoints, domainX[0]), 0)
+        const to = Math.min(getIndexBeforeX(dataPoints, domainX[1]) + 1, dataPoints.length)
+
     return (
         <>
-            <Line dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} color={color} clipId={clipId} />
+            <Line dataPoints={dataPoints.slice(from, to)} xScaler={xScaler} yScaler={yScaler} color={color} clipId={clipId} />
             <XAxis xScaler={xScaler} innerHeight={innerHeight} />
             <YAxis yScaler={yScaler} />
         </>

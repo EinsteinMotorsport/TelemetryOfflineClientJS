@@ -114,7 +114,7 @@ function onChange(handler: () => void) {
 async function init() {
     const timeInterval = 0.02 // DataPoint each 20 ms
     await loadChannelDefinitions('channelDefinitions.txt')
-    await generateTestData({ timeInterval, count: 5000 })
+    await generateTestData({ timeInterval, count: 50 * 60 * 15 })
     console.log(channelDefinitions)
     console.log(data)
     triggerOnChange()

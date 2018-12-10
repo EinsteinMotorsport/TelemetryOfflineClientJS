@@ -1,11 +1,15 @@
 import { bisector } from 'd3-array'
 
+export const getIndexBeforeX = (dataPoints, x) => {
+    const bisect = bisector(d => d.time).left
+    return bisect(dataPoints, x) - 1
+}
+
 // TODO soll wirklich der Punkt verwendet werden, der am nahesten dran ist?
 export const getClosestDataPoint = (dataPoints, x) => {
-    const bisect = bisector(d => d.time).left
-    const index = bisect(dataPoints, x)
-    const before = dataPoints[index - 1]
-    const after = dataPoints[index]
+    const index = getIndexBeforeX(dataPoints, x)
+    const before = dataPoints[index]
+    const after = dataPoints[index + 1]
     let item
     if (!before && !after)
         item = null
