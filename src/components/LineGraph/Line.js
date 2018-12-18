@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { line, linear } from 'd3-shape'
+import { line } from 'd3-shape'
 
 const StyledPath = styled.path`
     stroke: ${props => props.color};

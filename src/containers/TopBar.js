@@ -49,7 +49,7 @@ const TopBar = ({
                 setTileSettings(0, {
                     type: 'ValueTable',
                     settings: {
-                        channels: [118, 120, 24]
+                        channels: [3, 118, 120, 24]
                     }
                 })
                 setTileSettings(1, {
@@ -76,8 +76,9 @@ const TopBar = ({
                 setTileSettings(4, {
                     type: 'LineGraph',
                     settings: {
-                        channel: 29,
-                        color: '#20ff05'
+                        channel: 3,
+                        color: '#20ff05',
+                        domainY: [-5e6, 5e6]
                     }
                 })
 

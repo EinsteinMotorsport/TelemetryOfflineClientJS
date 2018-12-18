@@ -39,6 +39,9 @@ const LineGraph = ({
 
     const dataPoints = channelData[settings.channel]
 
+    if (!settings.domainY)
+        settings.domainY = extent(dataPoints, d => d.value)
+
     if (!dataPoints) {
         return (
             <div>No Channel Data found for Channel '{settings.channel}'</div>
@@ -55,7 +58,7 @@ const LineGraph = ({
 
     const yScaler = scaleLinear()
         .range([innerHeight, 0])
-        .domain(domainY)
+        .domain(settings.domainY)
 
 
     const updateCursorX = (node) => {
@@ -70,7 +73,7 @@ const LineGraph = ({
     return (
         <svg height={height} width={width} ref={node => select(node).on('mousemove', updateCursorX.bind(null, node))}> { /* TODO direkt in JSX schreiben als onMouseMove */}
             <g transform={`translate(${margin.left}, ${margin.top})`}>
-                <Graph dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={domainY} color={settings.color} />
+                <Graph dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={settings.domainY} color={settings.color} />
                 <CrossHair dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
                 { settings.overview && 
                     <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} /> }

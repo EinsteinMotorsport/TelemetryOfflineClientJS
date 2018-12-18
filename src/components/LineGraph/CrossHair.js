@@ -24,8 +24,7 @@ const CrossHair = ({
 
     const closestPoint = getClosestDataPoint(dataPoints, x)
 
-    //const posX = xScaler(closestPoint.time) TODO
-    const posX = xScaler(x)
+    const posX = xScaler(closestPoint.time)
     const posY = yScaler(closestPoint.value)
 
     return (

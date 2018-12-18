@@ -8,7 +8,7 @@ import 'react-mosaic-component/react-mosaic-component.css'
 
 import { setTilePositions } from '../actions'
 import Tile from './Tile'
-import TileSettingsPopUp from './TileSettingsPopUp';
+import TileSettingsPopUp from './TileSettingsPopUp'
 
 const StyledWorkspace = styled.div`
   background-color: grey;

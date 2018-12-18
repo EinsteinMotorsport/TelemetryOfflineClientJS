@@ -18,8 +18,6 @@ const Graph = ({
     color
 }) => {
 
-    // TODO Higher Order Component die die cursorX im state hat, um die Performance zu verbessern. Beim Setzen des cursorX wird zuerst das eigene Tile aktualisiert und dann das globale setCursor gemacht (evtl. mit throttle/debounce)
-
     const xScaler = scaleLinear()
         .range([0, innerWidth])
         .domain(domainX)
@@ -29,7 +27,7 @@ const Graph = ({
         .domain(domainY)
 
         const from = Math.max(getIndexBeforeX(dataPoints, domainX[0]), 0)
-        const to = Math.min(getIndexBeforeX(dataPoints, domainX[1]) + 1, dataPoints.length)
+        const to = Math.min(getIndexBeforeX(dataPoints, domainX[1]) + 2, dataPoints.length)
 
     return (
         <>
