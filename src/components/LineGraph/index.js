@@ -50,7 +50,6 @@ const LineGraph = ({
 
     // Bei Overview-Graph gesamten Bereich anzeigen
     const displayedDomainX = settings.overview ? [0, totalDuration] : domainX
-    const domainY = extent(dataPoints, d => d.value)
 
     const xScaler = scaleLinear()
         .range([0, innerWidth])
@@ -60,9 +59,16 @@ const LineGraph = ({
         .range([innerHeight, 0])
         .domain(settings.domainY)
 
+    let svgRef = null
 
-    const updateCursorX = (node) => {
-        const coords = mouse(node)
+    const setSvgRef = ref => {
+        svgRef = ref
+        select(ref)
+            .on('mousemove', updateCursorX)
+    }
+
+    const updateCursorX = () => {
+        const coords = mouse(svgRef)
         const xPos = xScaler.invert(coords[0] - margin.left)
         setCursorX(xPos)
     }
@@ -71,7 +77,7 @@ const LineGraph = ({
     const clipId = 'lineGraph-clipid' + id
 
     return (
-        <svg height={height} width={width} ref={node => select(node).on('mousemove', updateCursorX.bind(null, node))}> { /* TODO direkt in JSX schreiben als onMouseMove */}
+        <svg height={height} width={width} ref={setSvgRef} >
             <g transform={`translate(${margin.left}, ${margin.top})`}>
                 <Graph dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={settings.domainY} color={settings.color} />
                 <CrossHair dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
