@@ -7,9 +7,10 @@ import TestTile from '../components/TestTile'
 import LineGraph from '../components/LineGraph/'
 import ValueTable from '../components/ValueTable'
 import DataContext from '../DataContext'
+import TileErrorBoundary from './TileErrorBoundary'
 
-import { 
-    setCursorX, 
+import {
+    setCursorX,
     toggleSettingsPopUp,
     setTileSettings,
     setDomainX
@@ -62,8 +63,10 @@ const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleS
                         toggleSettingsPopUp(tileId)
                         event.preventDefault()
                     }}>
-                        {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
-                        <TileType {...tileProps} />
+                        <TileErrorBoundary>
+                            {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
+                            <TileType {...tileProps} />
+                        </TileErrorBoundary>
                     </StyledBody>
                 </MosaicWindow>
 
