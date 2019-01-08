@@ -18,6 +18,9 @@ const Graph = ({
     color
 }) => {
 
+    if (!color)
+        color = 'red'
+
     const xScaler = scaleLinear()
         .range([0, innerWidth])
         .domain(domainX)

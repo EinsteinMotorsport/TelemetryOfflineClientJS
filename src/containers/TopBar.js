@@ -16,9 +16,14 @@ const TopBar = ({
             <button onClick={() => {
                 const channel = Math.floor(Math.random() * 128) + 2
                 addTile({
-                    type: Math.random() < 0.5 ? 'LineGraph' : 'OverviewGraph',
+                    type: 'LineGraph',
                     settings: {
-                        channel
+                        dataSeries: [
+                            {
+                                channel,
+                                color: 'orange'
+                            }
+                        ]
                     }
                 })
             }}>Neu</button>
@@ -83,6 +88,87 @@ const TopBar = ({
                 })
 
             }}>Demo</button>
+
+            <button onClick={() => {
+                setTilePositions({
+                    direction: 'row',
+                    first: 0,
+                    second: {
+                        first: 2,
+                        second: 3,
+                        direction: 'column',
+                        splitPercentage: 25.356576862123614
+                    },
+                    splitPercentage: 20
+                })
+                setTileSettings(0, {
+                    type: 'ValueTable',
+                    settings: {
+                        channels: [
+                            3,
+                            118,
+                            120,
+                            24
+                        ]
+                    }
+                })
+                setTileSettings(2, {
+                    type: 'LineGraph',
+                    settings: {
+                        dataSeries: [
+                            {
+                                channel: 107
+                            }
+                        ],
+                        overview: true
+                    }
+                })
+                setTileSettings(3, {
+                    type: 'LineGraph',
+                    settings: {
+                        dataSeries: [
+                            {
+                                channel: 3,
+                                color: '#0077ff'
+                            },
+                            {
+                                channel: 2,
+                                color: 'orange'
+                            }
+                        ],
+                    }
+                })
+            }}>Demo 2</button>
+
+            <button onClick={() => {
+                setTileSettings(3, {
+                    type: 'LineGraph',
+                    settings: {
+                        dataSeries: [
+                            {
+                                channel: 3,
+                                color: '#0077ff'
+                            },
+                            {
+                                channel: 2,
+                                color: 'orange'
+                            },
+                            {
+                                channel: 82,
+                                color: 'lime'
+                            },
+                            {
+                                channel: 99,
+                                color: 'red'
+                            },
+                            {
+                                channel: 130,
+                                color: 'pink'
+                            }
+                        ]
+                    }
+                })
+            }}>Joa</button>
         </div>
     )
 

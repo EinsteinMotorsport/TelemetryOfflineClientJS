@@ -1,5 +1,5 @@
 import React from 'react'
-
+import styled from 'styled-components'
 import { select, mouse } from 'd3-selection'
 import { scaleLinear } from 'd3-scale'
 
@@ -33,21 +33,9 @@ const LineGraph = ({
     const innerHeight = height - margin.top - margin.bottom
 
     settings = { // Default values
-        color: 'red',
         overview: false,
+        dataSeries: [],
         ...settings
-    }
-
-    const dataPoints = channelData[settings.channel]
-
-    if (!settings.domainY)
-    if (!settings.domainY) // Nur berechnen wenn kein domainY gesetzt ist
-        settings.domainY = extent(dataPoints, d => d.value)
-
-    if (!dataPoints) {
-        return (
-            <div>No Channel Data found for Channel '{settings.channel}'</div>
-        )
     }
 
     // Bei Overview-Graph gesamten Bereich anzeigen
@@ -57,9 +45,9 @@ const LineGraph = ({
         .range([0, innerWidth])
         .domain(displayedDomainX)
 
-    const yScaler = scaleLinear()
+    /*const yScaler = scaleLinear()
         .range([innerHeight, 0])
-        .domain(settings.domainY)
+        .domain(settings.domainY)*/
 
     let svgRef = null
 
@@ -75,16 +63,31 @@ const LineGraph = ({
         setCursorX(xPos)
     }
 
+    const StyledLine = styled.line`
+        stroke-width: 1;
+        stroke: #ffffff;
+    `
+    const x = xScaler(cursorX)
 
     const clipId = 'lineGraph-clipid' + id
 
     return (
         <svg height={height} width={width} ref={setSvgRef} >
             <g transform={`translate(${margin.left}, ${margin.top})`}>
-                <Graph dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={settings.domainY} color={settings.color} />
-                <CrossHair dataPoints={dataPoints} xScaler={xScaler} yScaler={yScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
-                { settings.overview && 
-                    <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} /> }
+                {
+                    // Für jede dataSeries ein Graph
+                    settings.dataSeries.map((series, index) => {
+                        const dataPoints = channelData[series.channel]
+                        const domainY = series.domainY || extent(dataPoints, d => d.value)
+                        return <Graph key={index} dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={domainY} color={series.color} />
+                    })
+                }
+                <StyledLine x1={x} x2={x} y1={-margin.top} y2={height} />
+                {//<CrossHair dataPoints={settings.dataSeries.map(series => channelData[series.channel])} xScaler={xScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
+                }
+
+                {settings.overview &&
+                    <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />}
             </g>
 
             <defs>
@@ -96,8 +99,8 @@ const LineGraph = ({
     )
 }
 
-export default withReduxAccelerator(LineGraph, {
+export default /*withReduxAccelerator(*/LineGraph/*, {
     selection: {
         cursorX: 50
     }
-})
+})*/
