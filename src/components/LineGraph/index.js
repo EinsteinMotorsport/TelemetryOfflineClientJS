@@ -5,6 +5,7 @@ import { scaleLinear } from 'd3-scale'
 
 import { extent } from 'd3-array'
 
+import withReduxAccelerator from '../../containers/withReduxAccelerator'
 import Graph from './Graph'
 import CrossHair from './CrossHair'
 import Brush from './Brush'
@@ -40,6 +41,7 @@ const LineGraph = ({
     const dataPoints = channelData[settings.channel]
 
     if (!settings.domainY)
+    if (!settings.domainY) // Nur berechnen wenn kein domainY gesetzt ist
         settings.domainY = extent(dataPoints, d => d.value)
 
     if (!dataPoints) {
@@ -94,4 +96,8 @@ const LineGraph = ({
     )
 }
 
-export default LineGraph
+export default withReduxAccelerator(LineGraph, {
+    selection: {
+        cursorX: 50
+    }
+})

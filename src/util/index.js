@@ -22,3 +22,25 @@ export const getClosestDataPoint = (dataPoints, x) => {
 
     return item
 }
+
+export const throttle = (callback, time) => {
+    let running = false
+    let callArgs
+    let callThis
+
+    const start = () => {
+        running = true
+        setTimeout(() => {
+            running = false
+            callback.apply(callThis, callArgs)
+        }, time)
+    }
+
+
+    return function (...args) {
+        callArgs = args
+        callThis = this
+        if (!running)
+            start()
+    }
+}
