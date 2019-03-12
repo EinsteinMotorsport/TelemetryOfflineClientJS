@@ -169,6 +169,33 @@ const TopBar = ({
                     }
                 })
             }}>Joa</button>
+
+            <button onClick={() => {
+                setTilePositions({
+                    first: 2,
+                    second: 3,
+                    direction: 'column',
+                    splitPercentage: 25.356576862123614
+                })
+                setTileSettings(2, {
+                    type: 'LineGraph',
+                    settings: {
+                        dataSeries: [],
+                        overview: true
+                    }
+                })
+                setTileSettings(3, {
+                    type: 'LineGraphCanvas',
+                    settings: {
+                        dataSeries: [
+                            {
+                                channel: 49,
+                                color: '#0077ff'
+                            }
+                        ],
+                    }
+                })
+            }}>Test 1</button>
         </div>
     )
 

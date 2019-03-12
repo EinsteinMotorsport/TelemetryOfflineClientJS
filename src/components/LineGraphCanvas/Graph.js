@@ -31,15 +31,11 @@ const Graph = ({
         .domain(domainY)
 
     return (
-        <DataSupplier channel={channel}  domainX={domainX} resolution={innerWidth / 2} >
-            {dataPoints =>
-                <>
-                    <Line dataPoints={dataPoints} innerWidth={innerWidth} innerHeight={innerHeight} domainX={domainX} domainY={domainY} color={color} clipId={clipId} />
-                    <XAxis xScaler={xScaler} innerHeight={innerHeight} />
-                    <YAxis yScaler={yScaler} />
-                </>
-            }
-        </DataSupplier>
+        <>
+            <Line channel={channel} posX={40} posY={0} innerWidth={innerWidth} innerHeight={innerHeight} domainX={domainX} domainY={domainY} color={color} />
+            <XAxis posX={40} posY={innerHeight} width={innerWidth} height={20} extendLeft={40} domainX={domainX} />
+            <YAxis posX={0} posY={0} width={40} height={innerHeight} extendBottom={20} domainY={domainY} />
+        </>
     )
 }
 

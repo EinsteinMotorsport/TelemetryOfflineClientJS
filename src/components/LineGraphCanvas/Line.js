@@ -1,127 +1,156 @@
-import React, { Component } from 'react'
+import React, { Component, useState, useMemo } from 'react'
 import styled from 'styled-components'
 import { line, curveStep } from 'd3-shape'
 import { scaleLinear } from 'd3-scale'
+import memoize from 'memoize-one'
 
 import { getDomainWithOverlap } from '../../util'
+import { render } from 'react-dom';
+import ScaledCanvas from '../ScaledCanvas'
+import useChannelData from '../../hooks/useChannelData'
 
-const StyledPath = styled.path`
-    stroke: ${props => props.color};
-    fill: none;
-    stroke-width: 2px;
-    clip-path: url(#${props => props.clipId});
-`
+let id
 
-class Line extends Component {
+const ratio = window.devicePixelRatio || 1
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            parameters: {},
-        }
-        //this.state = this._generateLine()
-        this.setCanvasRef = this.setCanvasRef.bind(this)
+const Line = ({
+    channel,
+    innerWidth,
+    innerHeight,
+    posX,
+    posY,
+    domainX,
+    domainY,
+    color
+}) => {
+
+    const xScaler = scaleLinear()
+        .range([0, innerWidth])
+        .domain(domainX)
+
+    const yScaler = scaleLinear()
+        .range([innerHeight, 0])
+        .domain(domainY)
+
+    const valueLine = line()
+        .x(d => xScaler(d.time))
+        .y(d => yScaler(d.value))
+
+    const request = {
+        channel,
+        domainX,
+        resolution: innerWidth / 2
     }
 
-    static getDerivedStateFromProps(props, state) {
-        if (props.dataPoints === state.dataPoints
-            && state.parameters.domainX
-            && props.domainX[0] >= state.parameters.domainX[0]
-            && props.domainX[1] <= state.parameters.domainX[1]
-        ) {
-            return null
-        }
+    const dataPoints = useChannelData(request)
 
-        return Line._generateLine(props)
+    const [offsetCanvasRequest, setOffsetCanvasRequest] = useState()
 
+    const drawOffsetCanvas = () => {
+        if (dataPoints === null)
+            return
+        
+        const offContext = offscreenCanvas.getContext('2d')
+
+        offContext.resetTransform()
+        offContext.scale(ratio, ratio)
+
+
+        const contextedValueLine = valueLine
+            .context(offContext)
+
+        offContext.clearRect(0, 0, offContext.canvas.width, offContext.canvas.height)
+
+        offContext.beginPath()
+        contextedValueLine(dataPoints)
+        offContext.lineWidth = 1.5
+        offContext.strokeStyle = color
+        offContext.stroke()
     }
 
-    static _generateLine(props) {
-        if (props.dataPoints === null) {
-            return {
-                loading: true
-            }
-        }
+    const offscreenCanvas = useMemo(() => {
+        const canvas = document.createElement('canvas')
+        const overlap = 0.2 // 20% links und 20% rechts
+        canvas.width = (innerWidth + 2 * innerWidth * overlap) * ratio
+        canvas.height = innerHeight * ratio
+        setOffsetCanvasRequest({
+            ...request,
+            xScaler
+        })
+        return canvas
+    }, [innerWidth, innerWidth, dataPoints])
 
-        const domainX = getDomainWithOverlap(props.domainX)
-        //const domainY = this._getDomainWithOverlap(this.props.domainY)
+    console.log(offscreenCanvas)
 
+    useMemo(() => {
+        drawOffsetCanvas()
+    }, [dataPoints])
+
+
+
+    // Todo offscreen Canvas
+    const draw = context => {
+        console.time("canvasRender")
         const xScaler = scaleLinear()
-            .range([0, props.innerWidth])
+            .range([0, innerWidth])
             .domain(domainX)
 
-        const yScaler = scaleLinear()
-            .range([props.innerHeight, 0])
-            .domain(props.domainY)
 
-        const valueLine = line()
-            .x(d => xScaler(d.time))
-            .y(d => yScaler(d.value))
-
-
-        return {
-            loading: false,
-            valueLine,
-            parameters: {
-                domainX
-            },
-            xScaler,
-            dataPoints: props.dataPoints
-        }
-    }
-
-    setCanvasRef(ref) {
-        this._canvasRef = ref
-        if (ref == null) {
-            console.log("Nullen")
-            return
-        }
-        this.canvasRender()
-    }
-
-    canvasRender() {
-        const xScaler = scaleLinear()
-            .range([0, this.props.innerWidth])
-            .domain(this.props.domainX)
-
-
-        const translateX = xScaler(this.state.xScaler.invert(0))
-        const scaleX = xScaler(this.state.xScaler.invert(1)) - translateX
-        console.log(translateX, scaleX)
+        
 
         console.log("Rendern")
+        console.log(dataPoints.length + " Punkte")
 
-        const context = this._canvasRef.getContext('2d')
+        /*context.lineWidth = 1.5
+        context.strokeStyle = color
+        context.beginPath()
 
-        const valueLine = this.state.valueLine
-            .context(context)
+
+        dataPoints.slice(0, 1500).forEach((point, index) => {
+            context.lineTo(xScaler(point.time), yScaler(point.value))
+            //context.fillRect(index % 50, Math.floor(index / 50), 10, 10)
+        })
+
+        context.stroke()*/
 
         context.resetTransform()
-        context.translate(translateX, 0)
-        context.scale(scaleX, 1)
 
-        context.clearRect(0, 0, this._canvasRef.width, this._canvasRef.height)
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
-        context.beginPath()
-        valueLine(this.state.dataPoints)
-        context.lineWidth = 1.5
-        context.strokeStyle = this.props.color
-        context.stroke()
+
+        const translateX = offsetCanvasRequest.xScaler(xScaler.invert(0))
+        const scaleX = offsetCanvasRequest.xScaler(xScaler.invert(1)) - translateX
+        //console.log(translateX, scaleX)
+
+        context.drawImage(offscreenCanvas, translateX * ratio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
+
+        console.timeEnd("canvasRender")
     }
 
-    render() {
-        // Todo Hooks?
-        if (this.state.loading) {
-            return <text>Keine Daten</text>
-        }
+    /*if (props.dataPoints === dataPoints
+        && parameters.domainX
+        && props.domainX[0] >= parameters.domainX[0]
+        && props.domainX[1] <= parameters.domainX[1]
+    ) {
+        return null
+    }*/
 
-        if (this._canvasRef)
-            this.canvasRender()
-
-        return (
-            <canvas width={this.props.innerWidth} height={this.props.innerHeight} ref={this.setCanvasRef} />
-        )
+    if (dataPoints === null) {
+        return <p style={{ color: color }}>Loading</p>
     }
+
+
+
+    // TODO Memo
+
+    return (
+        <ScaledCanvas
+            width={innerWidth}
+            height={innerHeight}
+            posX={posX}
+            posY={posY}
+            draw={draw} />
+    )
 }
 
 export default Line

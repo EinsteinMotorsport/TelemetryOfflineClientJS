@@ -7,6 +7,8 @@
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "d3": "^5.9.0",
+    "eslint-plugin-react-hooks": "^1.0.2",
+    "memoize-one": "^5.0.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "react-mosaic-component": "^2.0.2",
@@ -24,6 +26,9 @@
     "serve": "npx serve -s build"
   },
   "eslintConfig": {
+    "plugins": [
+      "react-hooks"
+    ],
     "extends": "react-app",
     "rules": {
       "semi": [
@@ -44,7 +49,8 @@
           "avoidEscape": true,
           "allowTemplateLiterals": true
         }
-      ]
+      ],
+      "react-hooks/rules-of-hooks": "error"
     }
   },
   "browserslist": [

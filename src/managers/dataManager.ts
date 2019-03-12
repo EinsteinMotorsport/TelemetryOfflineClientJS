@@ -140,19 +140,19 @@ function onChange(handler: () => void) {
 }
 
 function matchCacheEntry(request: DataRequest): DataRequest {
-    for (const [key, value] of cachedData.entries()) { 
-        if (request.channel === key.channel 
+    for (const [key, value] of cachedData.entries()) {
+        if (request.channel === key.channel
             && request.domainX[0] >= key.domainX[0] // TODO
             && request.domainX[1] <= key.domainX[1]
             && request.resolution === key.resolution
-            ) {
-                console.log("Cache hit")
-                value.counter++
-                return key
+        ) {
+            console.log('Cache hit')
+            value.counter++
+            return key
         }
     }
 
-    console.log("no cache hit")
+    console.log('%cCahe miss', 'color: red')
 
     const generatedRequest = {
         ...request,
@@ -174,9 +174,9 @@ function matchCacheEntry(request: DataRequest): DataRequest {
 
     let channelData = dataPoints.slice(from, to)
 
-    /*const ratio = Math.floor(channelData.length / 1000)
-    channelData = channelData.filter((_, index) => index % ratio === 0)*/
-    channelData = simplify(channelData, (generatedRequest.domainX[1] - generatedRequest.domainX[0]) / generatedRequest.resolution, true)
+    const ratio = Math.floor(channelData.length / 1000)
+    channelData = channelData.filter((_, index) => index % ratio === 0) // Todo
+    //channelData = simplify(channelData, (generatedRequest.domainX[1] - generatedRequest.domainX[0]) / generatedRequest.resolution, false)
 
     cachedData.set(generatedRequest, {
         dataPoints: channelData,
@@ -190,14 +190,18 @@ function unmatchCacheEntry(request: DataRequest) {
     const cachedRequest = subscribedSuppliers.get(request)!.cachedRequest
     const entry = cachedData.get(cachedRequest)!
     entry.counter--
-    if (entry.counter == 0) {
-        console.log("Lösche Eintrag")
-        cachedData.delete(cachedRequest)
-    }
+    setTimeout(() => {
+        if (entry.counter == 0) {
+            console.log("Lösche Eintrag")
+            cachedData.delete(cachedRequest)
+        }
+    }, 500)
 }
 
 function registerDataSupplier(request: DataRequest, changeHandler: ChangeHandler): ChannelData | null {
+    console.time("dataManagerDings")
     const cachedRequest = matchCacheEntry(request)
+    console.timeEnd("dataManagerDings")
     subscribedSuppliers.set(request, {
         changeHandler,
         cachedRequest
@@ -218,7 +222,7 @@ async function init() {
     //await generateTestData({ timeInterval, count: 50 * 60 * 15 })
 
     console.log(channelDefinitions)
-    console.log(data)
+    //console.log(data)
     triggerOnChange()
     /*setInterval(() => {
         totalDuration += timeInterval
@@ -227,10 +231,10 @@ async function init() {
     }, 10)*/
 }
 
-export default { 
-    getChannelDefinitions, 
-    onChange, 
-    getAllData, 
+export default {
+    getChannelDefinitions,
+    onChange,
+    getAllData,
     getTotalDuration,
     registerDataSupplier,
     unregisterDataSupplier
