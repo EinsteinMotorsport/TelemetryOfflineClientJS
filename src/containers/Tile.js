@@ -32,46 +32,35 @@ const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleS
     const TileType = tileTypes[tileSettings.type] || (() => <div>Unknown TileType '{tileSettings.type}'</div>)
     let tileProps
     return (
-        <DataContext.Consumer>
-            {data => (
-
-                // Da MosaicWindow shouldComponentUpdate() implementiert und nur neu rendert, wenn sich die props geändert haben, 
-                // müssen wir hier als Workaround alle relevanten Props auch noch dem MosaicWindow übergeben. So ein Scheiß. 
-                // Siehe https://github.com/palantir/react-mosaic/issues/65
-                <MosaicWindow path={path} title={`Tile ${tileId}: ${size.width}x${size.height}`} additionalControls={<button onClick={() => toggleSettingsPopUp(tileId)}>Settings</button>}
-                    workaround={tileProps = {
-                        id: 'tile' + tileId,
-                        width: size.width - 6,
-                        height: size.height - 6 - 30,
-                        settings: tileSettings.settings,
-                        setSettings: (newSettings) => setTileSettings(tileId, {
-                            ...tileSettings,
-                            settings: newSettings
-                        }),
-                        selection: {
-                            ...selection,
-                            setDomainX,
-                            setCursorX
-                        },
-                        data: {
-                            channelDefinitions: data.channelDefinitions,
-                            totalDuration: data.totalDuration,
-                            channelData: data.channelData
-                        }
-                    }} >
-                    <StyledBody onContextMenu={event => {
-                        toggleSettingsPopUp(tileId)
-                        event.preventDefault()
-                    }}>
-                        <TileErrorBoundary>
-                            {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
-                            <TileType {...tileProps} />
-                        </TileErrorBoundary>
-                    </StyledBody>
-                </MosaicWindow>
-
-            )}
-        </DataContext.Consumer>
+        // Da MosaicWindow shouldComponentUpdate() implementiert und nur neu rendert, wenn sich die props geändert haben, 
+        // müssen wir hier als Workaround alle relevanten Props auch noch dem MosaicWindow übergeben. So ein Scheiß. 
+        // Siehe https://github.com/palantir/react-mosaic/issues/65
+        <MosaicWindow path={path} title={`Tile ${tileId}: ${size.width}x${size.height}`} additionalControls={<button onClick={() => toggleSettingsPopUp(tileId)}>Settings</button>}
+            workaround={tileProps = {
+                id: 'tile' + tileId,
+                width: size.width - 6,
+                height: size.height - 6 - 30,
+                settings: tileSettings.settings,
+                setSettings: (newSettings) => setTileSettings(tileId, {
+                    ...tileSettings,
+                    settings: newSettings
+                }),
+                selection: {
+                    ...selection,
+                    setDomainX,
+                    setCursorX
+                }
+            }} >
+            <StyledBody onContextMenu={event => {
+                toggleSettingsPopUp(tileId)
+                event.preventDefault()
+            }}>
+                <TileErrorBoundary>
+                    {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
+                    <TileType {...tileProps} />
+                </TileErrorBoundary>
+            </StyledBody>
+        </MosaicWindow>
     )
 }
 

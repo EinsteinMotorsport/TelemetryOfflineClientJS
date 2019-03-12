@@ -117,7 +117,7 @@ const TopBar = ({
                     settings: {
                         dataSeries: [
                             {
-                                channel: 107
+                                channel: 33
                             }
                         ],
                         overview: true
@@ -128,11 +128,11 @@ const TopBar = ({
                     settings: {
                         dataSeries: [
                             {
-                                channel: 3,
+                                channel: 49,
                                 color: '#0077ff'
                             },
                             {
-                                channel: 2,
+                                channel: 27,
                                 color: 'orange'
                             }
                         ],

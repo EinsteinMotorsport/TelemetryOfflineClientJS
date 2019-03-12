@@ -9,6 +9,14 @@ import withReduxAccelerator from '../../containers/withReduxAccelerator'
 import Graph from './Graph'
 import CrossHair from './CrossHair'
 import Brush from './Brush'
+import dataManager from '../../managers/dataManager'
+
+const StyledLine = styled.line`
+        stroke-width: 1;
+        stroke: #ffffff;
+`
+
+// TODO https://github.com/ReactQuantum/ReactQuantum/tree/master
 
 const LineGraph = ({
     id,
@@ -21,11 +29,6 @@ const LineGraph = ({
         setDomainX,
         cursorX,
         setCursorX
-    },
-    data: {
-        channelDefinitions,
-        totalDuration,
-        channelData
     }
 }) => {
     const margin = { top: 20, right: 20, bottom: 20, left: 40 }
@@ -37,6 +40,9 @@ const LineGraph = ({
         dataSeries: [],
         ...settings
     }
+
+    // TODO
+    const totalDuration = dataManager.getTotalDuration()
 
     // Bei Overview-Graph gesamten Bereich anzeigen
     const displayedDomainX = settings.overview ? [0, totalDuration] : domainX
@@ -63,10 +69,6 @@ const LineGraph = ({
         setCursorX(xPos)
     }
 
-    const StyledLine = styled.line`
-        stroke-width: 1;
-        stroke: #ffffff;
-    `
     const x = xScaler(cursorX)
 
     const clipId = 'lineGraph-clipid' + id
@@ -77,9 +79,9 @@ const LineGraph = ({
                 {
                     // Für jede dataSeries ein Graph
                     settings.dataSeries.map((series, index) => {
-                        const dataPoints = channelData[series.channel]
-                        const domainY = series.domainY || extent(dataPoints, d => d.value)
-                        return <Graph key={index} dataPoints={dataPoints} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={domainY} color={series.color} />
+                        //const dataPoints = channelData[series.channel]
+                        const domainY = series.domainY || [0, 1e5]//|| extent(dataPoints, d => d.value)
+                        return <Graph key={index} channel={series.channel} clipId={clipId} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={domainY} color={series.color} />
                     })
                 }
                 <StyledLine x1={x} x2={x} y1={-margin.top} y2={height} />

@@ -7,9 +7,10 @@ import { getIndexBeforeX } from '../../util/'
 import Line from './Line'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
+import DataSupplier from '../../containers/DataSupplier'
 
 const Graph = ({
-    dataPoints,
+    channel,
     clipId,
     innerWidth,
     innerHeight,
@@ -29,15 +30,16 @@ const Graph = ({
         .range([innerHeight, 0])
         .domain(domainY)
 
-        const from = Math.max(getIndexBeforeX(dataPoints, domainX[0]), 0)
-        const to = Math.min(getIndexBeforeX(dataPoints, domainX[1]) + 2, dataPoints.length)
-
     return (
-        <>
-            <Line dataPoints={dataPoints.slice(from, to)} xScaler={xScaler} yScaler={yScaler} color={color} clipId={clipId} />
-            <XAxis xScaler={xScaler} innerHeight={innerHeight} />
-            <YAxis yScaler={yScaler} />
-        </>
+        <DataSupplier channel={channel}  domainX={domainX} resolution={innerWidth / 2} >
+            {dataPoints =>
+                <>
+                    <Line dataPoints={dataPoints} innerWidth={innerWidth} innerHeight={innerHeight} domainX={domainX} domainY={domainY} color={color} clipId={clipId} />
+                    <XAxis xScaler={xScaler} innerHeight={innerHeight} />
+                    <YAxis yScaler={yScaler} />
+                </>
+            }
+        </DataSupplier>
     )
 }
 

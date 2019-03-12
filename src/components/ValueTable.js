@@ -25,16 +25,13 @@ const ValueTD = styled(StyledTD)`
  * Zeigt die Werte der ausgewählten Channels an Cursor-Position an
  */
 const ValueTable = ({
-    data: {
-        channelData,
-        channelDefinitions
-    },
     selection: {
         cursorX
     },
     settings
 }) => {
-    settings = { // default values
+    return null
+    /*settings = { // default values
         channels: [],
         ...settings
     }
@@ -62,7 +59,7 @@ const ValueTable = ({
                 </tbody>
             </StyledTable>
         </StyledDiv>
-    )
+    )*/
 }
 
 export default ValueTable

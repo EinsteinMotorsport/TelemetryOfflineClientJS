@@ -38,4 +38,6 @@ class DataProvider extends Component {
     }
 }
 
+window.getAllData =  dataManager.getAllData
+
 export default DataProvider

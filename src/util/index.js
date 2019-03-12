@@ -44,3 +44,8 @@ export const throttle = (callback, time) => {
             start()
     }
 }
+
+export const getDomainWithOverlap = (domain) => {
+    const delta = (domain[1] - domain[0]) / 10
+    return [domain[0] - delta, domain[1] + delta]
+}
