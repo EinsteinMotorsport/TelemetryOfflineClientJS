@@ -36,20 +36,24 @@ const Line = ({
         .x(d => xScaler(d.time))
         .y(d => yScaler(d.value))
 
+    const domainSize = domainX[1] - domainX[0]
+
     const request = {
         channel,
         domainX,
-        resolution: innerWidth / 2
+        resolution: domainSize / innerWidth
     }
 
-    const dataPoints = useChannelData(request)
+    const { fullyLoaded, channelData } = useChannelData(request)
+    //console.log("Line ", channelData)
 
     const [offsetCanvasRequest, setOffsetCanvasRequest] = useState()
 
     const drawOffsetCanvas = () => {
-        if (dataPoints === null)
+        console.log("Offscreen Draw")
+        if (channelData === null)
             return
-        
+
         const offContext = offscreenCanvas.getContext('2d')
 
         offContext.resetTransform()
@@ -62,7 +66,7 @@ const Line = ({
         offContext.clearRect(0, 0, offContext.canvas.width, offContext.canvas.height)
 
         offContext.beginPath()
-        contextedValueLine(dataPoints)
+        contextedValueLine(channelData)
         offContext.lineWidth = 1.5
         offContext.strokeStyle = color
         offContext.stroke()
@@ -78,28 +82,27 @@ const Line = ({
             xScaler
         })
         return canvas
-    }, [innerWidth, innerWidth, dataPoints])
+    }, [innerWidth, innerWidth, channelData])
 
-    console.log(offscreenCanvas)
+    //console.log(offscreenCanvas)
 
-    useMemo(() => {
+    //useMemo(() => {
         drawOffsetCanvas()
-    }, [dataPoints])
+    //}, [channelData])
 
 
 
     // Todo offscreen Canvas
     const draw = context => {
-        console.time("canvasRender")
+        //console.time("canvasRender")
         const xScaler = scaleLinear()
             .range([0, innerWidth])
             .domain(domainX)
 
 
-        
 
-        console.log("Rendern")
-        console.log(dataPoints.length + " Punkte")
+
+        console.log("Rendern", channelData.length + " Punkte")
 
         /*context.lineWidth = 1.5
         context.strokeStyle = color
@@ -118,13 +121,13 @@ const Line = ({
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
 
-        const translateX = offsetCanvasRequest.xScaler(xScaler.invert(0))
-        const scaleX = offsetCanvasRequest.xScaler(xScaler.invert(1)) - translateX
+        const translateX = 0 //offsetCanvasRequest.xScaler(xScaler.invert(0))
+        const scaleX = 1 //offsetCanvasRequest.xScaler(xScaler.invert(1)) - translateX
         //console.log(translateX, scaleX)
 
         context.drawImage(offscreenCanvas, translateX * ratio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
 
-        console.timeEnd("canvasRender")
+        //console.timeEnd("canvasRender")
     }
 
     /*if (props.dataPoints === dataPoints
@@ -135,21 +138,22 @@ const Line = ({
         return null
     }*/
 
-    if (dataPoints === null) {
-        return <p style={{ color: color }}>Loading</p>
-    }
-
 
 
     // TODO Memo
 
     return (
-        <ScaledCanvas
-            width={innerWidth}
-            height={innerHeight}
-            posX={posX}
-            posY={posY}
-            draw={draw} />
+        <>
+            <ScaledCanvas
+                width={innerWidth}
+                height={innerHeight}
+                posX={posX}
+                posY={posY}
+                draw={draw} />
+            {!fullyLoaded && 
+                <div>Loading</div>
+            }
+        </>
     )
 }
 

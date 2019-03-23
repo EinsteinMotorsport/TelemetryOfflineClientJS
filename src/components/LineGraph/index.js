@@ -9,7 +9,7 @@ import withReduxAccelerator from '../../containers/withReduxAccelerator'
 import Graph from './Graph'
 import CrossHair from './CrossHair'
 import Brush from './Brush'
-import dataManager from '../../managers/dataManager'
+import dataManager from '../../data/dataManager'
 
 const StyledLine = styled.line`
         stroke-width: 1;

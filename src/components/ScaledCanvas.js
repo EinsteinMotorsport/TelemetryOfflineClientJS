@@ -17,7 +17,7 @@ const ScaledCanvas = ({
     draw
 }) => {
 
-    var ratio = window.devicePixelRatio || 1
+    const ratio = window.devicePixelRatio || 1
 
     const ref = canvas => {
         if (!canvas) // if was unmounted

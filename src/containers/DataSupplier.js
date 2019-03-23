@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import dataManager from '../managers/dataManager'
+import dataManager from '../data/dataManager'
 
 class DataSupplier extends Component {
     constructor(props) {

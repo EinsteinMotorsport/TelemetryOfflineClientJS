@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import dataManager from '../managers/dataManager'
+import dataManager from '../data/dataManager'
 import DataContext from '../DataContext'
 
 /**

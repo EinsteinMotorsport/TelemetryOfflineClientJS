@@ -216,7 +216,6 @@ function unregisterDataSupplier(request: DataRequest) {
 
 async function init() {
     const timeInterval = 0.02 // DataPoint each 20 ms
-    totalDuration = 0.02 * 50 * 60 * 15;
     await loadChannelDefinitions('channelDefinitions.txt')
     await loadChannelData('channelData.json')
     //await generateTestData({ timeInterval, count: 50 * 60 * 15 })
@@ -240,4 +239,5 @@ export default {
     unregisterDataSupplier
 }
 
-init()
+totalDuration = 0.02 * 50 * 60 * 15;
+//init()

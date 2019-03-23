@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import dataManager from '../managers/dataManager'
+import dataManager from '../data/dataManager'
 import { zoom as d3Zoom, zoomIdentity as d3ZoomIdentity } from 'd3'
 import { select, event } from 'd3-selection'
 import { axisBottom, axisLeft, } from 'd3-axis'
