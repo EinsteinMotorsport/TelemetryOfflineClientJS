@@ -27,7 +27,8 @@ const useOffscreenCanvasLine = ({
     // The request that was drawn on the OfscreenCanvas
     const offscreenXScaler = useRef(null)
 
-    const offscreenCanvas = useMemo(() => {
+    // TOdo WebGL wäre auch eine Möglichkeit
+    const offscreenImage = useMemo(() => {
         if (channelData.length === 0) {
             offscreenXScaler.current = null
             return
@@ -44,15 +45,13 @@ const useOffscreenCanvasLine = ({
             .domain([domainYFrom, domainYTo])
 
         // Every DataPoint present in the channelData array is drawn, therefore the size can be different each time
-        const canvas = document.createElement('canvas')
         const minTime = channelData[0].time
         const maxTime = channelData[channelData.length - 1].time
         const offset = requestedXScaler(minTime)
         const width = (requestedXScaler(maxTime) - offset)
-        canvas.width = width * pixelRatio
-        canvas.height = innerHeight * pixelRatio
+        const canvas = new OffscreenCanvas(width * pixelRatio, innerHeight * pixelRatio)
 
-        console.log(`Canvas ${canvas.width}x${canvas.height}`)
+        //console.log(`Canvas ${canvas.width}x${canvas.height}`)
 
         const newXScaler = scaleLinear()
             .range([0, width])
@@ -82,13 +81,13 @@ const useOffscreenCanvasLine = ({
         offContext.stroke()
 
         console.timeEnd("offscreen-draw")
-        return canvas
+        return canvas.transferToImageBitmap()
 
     }, [channelData, domainYFrom, domainYTo, color, innerWidth, innerHeight, pixelRatio])
     // TODO testen ob die Messserte auch an der richtigen Stelle dargestellt werden
 
     return {
-        offscreenCanvas,
+        offscreenImage,
         offscreenXScaler: offscreenXScaler.current,
         fullyLoaded
     }

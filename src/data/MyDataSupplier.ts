@@ -74,7 +74,7 @@ export default class MyDataSupplier implements DataSupplier {
             this.retrieve(toRetrieve)
         }
 
-        console.log(this.cache)
+        //console.log(this.cache)
     }
 
     /**
@@ -90,7 +90,7 @@ export default class MyDataSupplier implements DataSupplier {
             .map(entry => ({ entry, score: this.calculateMatchScore(subRequest, entry.request)}))
             .sort((a, b) => b.score - a.score)
 
-        console.log(bestResults)
+        //console.log(bestResults)
 
         const bestResult = bestResults[0]
 
@@ -100,7 +100,7 @@ export default class MyDataSupplier implements DataSupplier {
                 fullMatch: false
             }
 
-        console.log("Requested:", subRequest, "Got:", bestResult.entry.request)
+        //console.log("Requested:", subRequest, "Got:", bestResult.entry.request)
         
         return {
             bestEntry: bestResult.entry,
@@ -184,17 +184,23 @@ export default class MyDataSupplier implements DataSupplier {
      */
     private async retrieveChannelData(request: SubRequest): Promise<ChannelData> {
         const channelData = await this.dataRetriever.retrieveChannelData(request.channel)
-
+        
         if (channelData === "notFound") {
             return channelData
         }
+        
+        console.time("simplify")
 
         const from = Math.max(getIndexBeforeX(channelData, request.domainX[0]), 0)
         const to = Math.min(getIndexBeforeX(channelData, request.domainX[1]) + 2, channelData.length)
 
-        return simplify(
+        const data = simplify(
             channelData.slice(from, to),
             request.resolution, false)
+
+        console.timeEnd("simplify")
+
+        return data
             
         /*const ratio = Math.floor((to - from) / 1000)
         return channelData

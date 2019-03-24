@@ -20,7 +20,7 @@ const useChannelData = ({
             resolution
         }
         dataSupplier.subscribe(dataRequest, event => {
-            console.log(event)
+            //console.log(event)
             setDataPoints(event)
         })
         return () => { // Effect-Cleanup

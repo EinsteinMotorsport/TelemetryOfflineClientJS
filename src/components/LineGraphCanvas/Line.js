@@ -19,7 +19,7 @@ const Line = ({
 
     // Drawing is done in an OffscreenCanvas
     const { 
-        offscreenCanvas, 
+        offscreenImage, 
         offscreenXScaler, // The request that was rendered in the OffscreenCanvas
         fullyLoaded 
     } = useOffscreenCanvasLine({
@@ -38,13 +38,15 @@ const Line = ({
      * @param {*} context 
      */
     const draw = context => {
-        console.log("Draw")
+        console.time("Draw")
 
         context.resetTransform()
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
-        if (offscreenXScaler === null) // Wenn es nichts zum Anzeigen gibt, dann soll auch nichts angezeigt werden
+        if (offscreenXScaler === null) { // Wenn es nichts zum Anzeigen gibt, dann soll auch nichts angezeigt werden
+            console.timeEnd("Draw")
             return
+        }
 
         const curXScaler = scaleLinear()
             .range([0, innerWidth])
@@ -53,7 +55,8 @@ const Line = ({
         const translateX = offscreenXScaler(curXScaler.invert(0))
         const scaleX = offscreenXScaler(curXScaler.invert(1)) - translateX
 
-        context.drawImage(offscreenCanvas, translateX * pixelRatio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
+        context.drawImage(offscreenImage, translateX * pixelRatio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
+        console.timeEnd("Draw")
     }
 
     return (
