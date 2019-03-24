@@ -16,20 +16,14 @@ const Line = ({
     domainY,
     color
 }) => {
-    const domainSize = domainX[1] - domainX[0]
-    const request = {
-        channel,
-        domainX,
-        resolution: domainSize / innerWidth
-    }
-    
+
     // Drawing is done in an OffscreenCanvas
     const { 
         offscreenCanvas, 
-        offscreenRequest, // The request that was rendered in the OffscreenCanvas
+        offscreenXScaler, // The request that was rendered in the OffscreenCanvas
         fullyLoaded 
     } = useOffscreenCanvasLine({
-        request,
+        channel,
         innerWidth,
         innerHeight,
         pixelRatio,
@@ -46,16 +40,15 @@ const Line = ({
     const draw = context => {
         console.log("Draw")
 
+        context.resetTransform()
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+
+        if (offscreenXScaler === null) // Wenn es nichts zum Anzeigen gibt, dann soll auch nichts angezeigt werden
+            return
+
         const curXScaler = scaleLinear()
             .range([0, innerWidth])
             .domain(domainX)
-
-        const offscreenXScaler = scaleLinear()
-            .range([0, innerWidth])
-            .domain(offscreenRequest.domainX)
-
-        context.resetTransform()
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
         const translateX = offscreenXScaler(curXScaler.invert(0))
         const scaleX = offscreenXScaler(curXScaler.invert(1)) - translateX

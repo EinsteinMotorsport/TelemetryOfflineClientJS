@@ -104,7 +104,7 @@ export default class MyDataSupplier implements DataSupplier {
         
         return {
             bestEntry: bestResult.entry,
-            fullMatch: bestResult.score >= 1 // If Score >= 1, the CacheEntry matches fully
+            fullMatch: bestResult.score >= 1 // If Score >= 1, the CacheEntry fullfilles the request fully
         }
     }
 

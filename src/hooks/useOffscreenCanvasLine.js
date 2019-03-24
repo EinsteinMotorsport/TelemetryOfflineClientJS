@@ -4,7 +4,7 @@ import { line } from 'd3-shape'
 import { scaleLinear } from 'd3-scale'
 
 const useOffscreenCanvasLine = ({
-    request,
+    channel,
     innerWidth,
     innerHeight,
     pixelRatio,
@@ -12,44 +12,63 @@ const useOffscreenCanvasLine = ({
     domainY,
     color
 }) => {
+    const domainSize = domainX[1] - domainX[0]
+    const request = {
+        channel,
+        domainX,
+        resolution: domainSize / innerWidth
+    }
 
-    const xScaler = scaleLinear()
-        .range([0, innerWidth])
-        .domain(domainX)
-
-    const yScaler = scaleLinear()
-        .range([innerHeight, 0])
-        .domain(domainY)
-
-    const valueLine = line()
-        .x(d => xScaler(d.time))
-        .y(d => yScaler(d.value))
+    const domainYFrom = domainY[0]
+    const domainYTo = domainY[1]
 
     const { fullyLoaded, channelData } = useChannelData(request)
-
-    // Recreate this canvas if the dimensions change
-    const offscreenCanvas = useMemo(() => {
-        const canvas = document.createElement('canvas')
-        const overlap = 0.2 // 20% links und 20% rechts
-        canvas.width = (innerWidth + 2 * innerWidth * overlap) * pixelRatio
-        canvas.height = innerHeight * pixelRatio
-        return canvas
-    }, [innerWidth, innerWidth])
     
     // The request that was drawn on the OfscreenCanvas
-    const offscreenRequest = useRef(null)
+    const offscreenXScaler = useRef(null)
 
-    useMemo(() => {
-        console.log("Offscreen Draw")
-        if (channelData === null)
+    const offscreenCanvas = useMemo(() => {
+        if (channelData.length === 0) {
+            offscreenXScaler.current = null
             return
+        }
+        
+        console.time("offscreen-draw")
 
-        offscreenRequest.current = request
+        const requestedXScaler = scaleLinear()
+            .range([0, innerWidth])
+            .domain(domainX)
 
-        const offContext = offscreenCanvas.getContext('2d')
+        const yScaler = scaleLinear()
+            .range([innerHeight, 0])
+            .domain([domainYFrom, domainYTo])
+
+        // Every DataPoint present in the channelData array is drawn, therefore the size can be different each time
+        const canvas = document.createElement('canvas')
+        const minTime = channelData[0].time
+        const maxTime = channelData[channelData.length - 1].time
+        const offset = requestedXScaler(minTime)
+        const width = (requestedXScaler(maxTime) - offset)
+        canvas.width = width * pixelRatio
+        canvas.height = innerHeight * pixelRatio
+
+        console.log(`Canvas ${canvas.width}x${canvas.height}`)
+
+        const newXScaler = scaleLinear()
+            .range([0, width])
+            .domain([minTime, maxTime])
+
+        const valueLine = line()
+            .x(d => newXScaler(d.time))
+            .y(d => yScaler(d.value))
+        
+
+        offscreenXScaler.current = newXScaler
+
+        const offContext = canvas.getContext('2d')
 
         offContext.resetTransform()
-        offContext.scale(pixelRatio, pixelRatio)
+        offContext.scale(pixelRatio, pixelRatio) // For high resultion rendering (Retina displays)
 
         const contextedValueLine = valueLine
             .context(offContext)
@@ -58,16 +77,19 @@ const useOffscreenCanvasLine = ({
 
         offContext.beginPath()
         contextedValueLine(channelData)
-        offContext.lineWidth = 1.5
+        offContext.lineWidth = 2
         offContext.strokeStyle = color
         offContext.stroke()
 
-    }, [channelData, domainY, color])
-    // TODO OffscreenCanvas muss mind. so groß wie alle Daten in ChannelData sonst wird was abgeschnitten
+        console.timeEnd("offscreen-draw")
+        return canvas
+
+    }, [channelData, domainYFrom, domainYTo, color, innerWidth, innerHeight, pixelRatio])
+    // TODO testen ob die Messserte auch an der richtigen Stelle dargestellt werden
 
     return {
         offscreenCanvas,
-        offscreenRequest: offscreenRequest.current,
+        offscreenXScaler: offscreenXScaler.current,
         fullyLoaded
     }
 }
