@@ -15,10 +15,10 @@ interface CacheEntry {
 }
 
 export default class MyDataSupplier implements DataSupplier {
-    dataRetriever: DataRetriever = new HttpDataRetriever()
-    subscriptions: Array<Subscription> = []
-    cache: Array<CacheEntry> = []
-    retrieving: boolean = false // if a retrieval is already in progress
+    private dataRetriever: DataRetriever = new HttpDataRetriever()
+    private subscriptions: Array<Subscription> = []
+    private cache: Array<CacheEntry> = []
+    private retrieving: boolean = false // if a retrieval is already in progress
 
 
     subscribe(request: SubRequest, changeHandler: SubEventHandler): void {

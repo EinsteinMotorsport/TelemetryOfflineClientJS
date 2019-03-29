@@ -168,6 +168,7 @@ module.exports = function(webpackEnv) {
               .replace(/\\/g, '/')
         : isEnvDevelopment &&
           (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
+      globalObject: 'this',
     },
     optimization: {
       minimize: isEnvProduction,
@@ -465,6 +466,10 @@ module.exports = function(webpackEnv) {
             // ** STOP ** Are you adding a new loader?
             // Make sure to add the new loader(s) before the "file" loader.
           ],
+        },
+        {
+          test: /\.worker\.js$/,
+          use: { loader: 'worker-loader' }
         },
       ],
     },
