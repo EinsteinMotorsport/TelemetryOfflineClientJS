@@ -5,8 +5,15 @@ const ctx = self
 
 // Respond to message from parent thread
 ctx.addEventListener("message", (event) => {
-    console.log("To worker", event)
-    render(event.data)
+    //console.log("To worker", event)
+    let result
+    try {
+        result = render(event.data)
+    } catch(e) {
+        console.error('Worker error', e)
+        result = null
+    }
+    ctx.postMessage(result)
 });
 
 function render({
@@ -20,10 +27,9 @@ function render({
     pixelRatio
 }) {
     if (channelData.length === 0) {
-        ctx.postMessage({
+        return {
             offscreenImage: null
-        })
-        return
+        }
     }
 
     console.time("offscreen-draw")
@@ -43,8 +49,8 @@ function render({
     const width = (requestedXScaler(maxTime) - offset)
     const canvas = new OffscreenCanvas(width * pixelRatio, innerHeight * pixelRatio)
 
-    console.log(`Canvas ${canvas.width}x${canvas.height}`)
-    console.log(`${minTime} bis ${maxTime}`)
+    //console.log(`Canvas ${canvas.width}x${canvas.height}`)
+    //console.log(`${minTime} bis ${maxTime}`)
 
     const newXScaler = scaleLinear()
         .range([0, width])
@@ -72,11 +78,11 @@ function render({
     offContext.stroke()
 
     console.timeEnd("offscreen-draw")
-    ctx.postMessage({
+    return {
         offscreenImage: canvas.transferToImageBitmap(),
         offscreenWidth: width,
         offscreenDomain: [minTime, maxTime]
-    })
+    }
 }
 
 export default null

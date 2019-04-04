@@ -1,9 +1,9 @@
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import useChannelData from './useChannelData'
-import { line } from 'd3-shape'
 import { scaleLinear } from 'd3-scale'
 
 import Worker from '../worker/OffscreenRenderer.worker'
+import useWorker from './useWorker'
 
 
 const useOffscreenCanvasLine = ({
@@ -29,32 +29,28 @@ const useOffscreenCanvasLine = ({
     
     // The request that was drawn on the OfscreenCanvas
     const offscreenXScaler = useRef(null)
+    const fullyRendered = useRef(false)
 
     const [offscreenImage, setOffscreenImage] = useState(null)
 
-    const worker = useRef(null)
-
-    useMemo(() => {
-        worker.current = new Worker()
-        worker.current.addEventListener('message', event => {
-            console.log("From Worker", event)
-            setOffscreenImage(event.data.offscreenImage)
-            if (event.data.offscreenImage === null) {
+    const { setTask } = useWorker({ 
+        Worker,
+        handler(data, done) {
+            if (data.offscreenImage === null) {
                 offscreenXScaler.current = null
             } else {
                 offscreenXScaler.current = scaleLinear()
-                    .range([0, event.data.offscreenWidth])
-                    .domain(event.data.offscreenDomain)
+                    .range([0, data.offscreenWidth])
+                    .domain(data.offscreenDomain)
             }
-        })
-        return () => {
-            // Todo Worker löschen
+            fullyRendered.current = done
+            setOffscreenImage(data.offscreenImage)
         }
-    }, [])
+    })
 
-    // TOdo WebGL wäre auch eine Möglichkeit
+    // TOdo WebGL wäre auch eine Möglichkeit z.B. http://www.pixijs.com/
     useMemo(() => {
-        worker.current.postMessage({
+        const task = {
             type: 'render',
             channelData,
             domainX,
@@ -64,7 +60,8 @@ const useOffscreenCanvasLine = ({
             innerWidth,
             innerHeight,
             pixelRatio
-        })
+        }
+        setTask(task)
 
     }, [channelData, domainYFrom, domainYTo, color, innerWidth, innerHeight, pixelRatio])
     // TODO testen ob die Messserte auch an der richtigen Stelle dargestellt werden
@@ -72,7 +69,7 @@ const useOffscreenCanvasLine = ({
     return {
         offscreenImage,
         offscreenXScaler: offscreenXScaler.current,
-        fullyLoaded
+        fullyLoaded: fullyLoaded && fullyRendered.current
     }
 }
 

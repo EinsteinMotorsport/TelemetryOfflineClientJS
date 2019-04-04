@@ -38,7 +38,7 @@ const Line = ({
      * @param {*} context 
      */
     const draw = context => {
-        console.time("Draw")
+        //console.time("Draw")
 
         context.resetTransform()
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
@@ -56,7 +56,7 @@ const Line = ({
         const scaleX = offscreenXScaler(curXScaler.invert(1)) - translateX
 
         context.drawImage(offscreenImage, translateX * pixelRatio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
-        console.timeEnd("Draw")
+        //console.timeEnd("Draw")
     }
 
     return (
