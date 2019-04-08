@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { select, mouse } from 'd3-selection'
 import { line, curveStep } from 'd3-shape'
@@ -7,17 +7,19 @@ import { scaleLinear } from 'd3-scale'
 import { extent } from 'd3-array'
 
 import Graph from './Graph'
-import CrossHair from './CrossHair'
+import CursorLine from './CursorLine'
 import Brush from './Brush'
 import dataManager from '../../data/dataManager'
 
-const StyledLine = styled.line`
-        stroke-width: 1;
-        stroke: #ffffff;
+const StyledDiv = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 `
 
 const LineGraph = ({
-    id,
     width,
     height,
     settings,
@@ -50,34 +52,44 @@ const LineGraph = ({
         .range([0, innerWidth])
         .domain(displayedDomainX)
 
+    const divRef = useRef(null)
 
-    /*const updateCursorX = () => {
-        const coords = mouse(svgRef)
-        const xPos = xScaler.invert(coords[0] - margin.left)
+
+    const onMouseMove = event => {
+        const x = event.screenX - divRef.current.getBoundingClientRect().x - margin.left
+        console.log(x)
+        const xPos = xScaler.invert(x)
         setCursorX(xPos)
-    }*/
-
-    const x = xScaler(cursorX)
+    }
 
     return (
-        <div>
+        <StyledDiv onMouseMove={onMouseMove} ref={divRef}>
             {
                 // Für jede dataSeries ein Graph
                 settings.dataSeries.map((series, index) => {
-                    //const dataPoints = channelData[series.channel]
                     const domainY = series.domainY || [0, 1e5]//|| extent(dataPoints, d => d.value)
-                    return <Graph key={index} channel={series.channel} innerWidth={innerWidth} innerHeight={innerHeight} domainX={displayedDomainX} domainY={domainY} color={series.color} />
+                    return <Graph 
+                        key={index} 
+                        channel={series.channel} 
+                        innerWidth={innerWidth} 
+                        innerHeight={innerHeight} 
+                        domainX={displayedDomainX} 
+                        domainY={domainY} 
+                        color={series.color} 
+                        marginLeft={margin.left}
+                        marginBottom={margin.bottom}
+                        />
                 })
             }
-            {//<StyledLine x1={x} x2={x} y1={-margin.top} y2={height} />
-            }
-            {//<CrossHair dataPoints={settings.dataSeries.map(series => channelData[series.channel])} xScaler={xScaler} x={cursorX} innerHeight={innerHeight} innerWidth={innerWidth} />
+            {
+                cursorX !== null &&
+                    <CursorLine left={margin.left} posX={cursorX} innerWidth={innerWidth} domainX={displayedDomainX} />
             }
 
-            {settings.overview &&
-                <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />}
+            {/*settings.overview &&
+                <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />*/}
 
-        </div>
+        </StyledDiv>
     )
 }
 

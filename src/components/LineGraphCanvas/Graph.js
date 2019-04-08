@@ -16,7 +16,9 @@ const Graph = ({
     innerHeight,
     domainX,
     domainY,
-    color
+    color,
+    marginLeft,
+    marginBottom
 }) => {
 
     if (!color)
@@ -32,9 +34,9 @@ const Graph = ({
 
     return (
         <>
-            <Line channel={channel} posX={40} posY={0} innerWidth={innerWidth} innerHeight={innerHeight} domainX={domainX} domainY={domainY} color={color} />
-            <XAxis posX={40} posY={innerHeight} width={innerWidth} height={20} extendLeft={40} domainX={domainX} />
-            <YAxis posX={0} posY={0} width={40} height={innerHeight} extendBottom={20} domainY={domainY} />
+            <Line channel={channel} posX={marginLeft} posY={0} innerWidth={innerWidth} innerHeight={innerHeight} domainX={domainX} domainY={domainY} color={color} />
+            <XAxis posX={marginLeft} posY={innerHeight} width={innerWidth} height={marginBottom} extendLeft={marginLeft} domainX={domainX} />
+            <YAxis posX={0} posY={0} width={marginLeft} height={innerHeight} extendBottom={marginBottom} domainY={domainY} />
         </>
     )
 }
