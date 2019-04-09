@@ -178,9 +178,11 @@ const TopBar = ({
                     splitPercentage: 25.356576862123614
                 })
                 setTileSettings(2, {
-                    type: 'LineGraph',
+                    type: 'LineGraphCanvas',
                     settings: {
-                        dataSeries: [],
+                        dataSeries: [
+                            { channel: 3 }
+                        ],
                         overview: true
                     }
                 })

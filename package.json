@@ -71,7 +71,34 @@
     "serve": "npx serve -s build"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "plugins": [
+      "react-hooks"
+    ],
+    "extends": "react-app",
+    "rules": {
+      "semi": [
+        "warn",
+        "never",
+        {
+          "beforeStatementContinuationChars": "always"
+        }
+      ],
+      "jsx-quotes": [
+        "warn",
+        "prefer-double"
+      ],
+      "quotes": [
+        "warn",
+        "single",
+        {
+          "avoidEscape": true,
+          "allowTemplateLiterals": true
+        }
+      ],
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn"
+    }
+
   },
   "browserslist": [
     ">0.2%",

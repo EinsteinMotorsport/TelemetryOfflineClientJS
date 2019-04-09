@@ -57,7 +57,6 @@ const LineGraph = ({
 
     const onMouseMove = event => {
         const x = event.screenX - divRef.current.getBoundingClientRect().x - margin.left
-        console.log(x)
         const xPos = xScaler.invert(x)
         setCursorX(xPos)
     }
@@ -85,9 +84,10 @@ const LineGraph = ({
                 cursorX !== null &&
                     <CursorLine left={margin.left} posX={cursorX} innerWidth={innerWidth} domainX={displayedDomainX} />
             }
-
-            {/*settings.overview &&
-                <Brush domainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />*/}
+            {
+                settings.overview &&
+                    <Brush left={margin.left} displayedDomainX={displayedDomainX} brushDomainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />
+            }
 
         </StyledDiv>
     )
