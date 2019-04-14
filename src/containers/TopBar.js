@@ -60,30 +60,50 @@ const TopBar = ({
                 setTileSettings(1, {
                     type: 'LineGraph',
                     settings: {
-                        channel: 3,
+                        dataSeries: [
+                            {
+                                channel: 7,
+                                domainY: [-1, 2]
+                            }
+                        ],
                         color: 'orange'
                     }
                 })
                 setTileSettings(2, {
                     type: 'LineGraph',
                     settings: {
-                        channel: 107,
+                        dataSeries: [
+                            { 
+                                channel: 107,
+                                domainY: [2.382e6,2.385e6]
+                            }
+                        ],
                         overview: true
                     }
                 })
                 setTileSettings(3, {
                     type: 'LineGraph',
                     settings: {
-                        channel: 3,
-                        color: '#0077ff'
+                        dataSeries: [
+                            {
+                                channel: 3,
+                                color: '#0077ff',
+                                domainY: [0, 2000]
+                            }
+                        ],
+
                     }
                 })
                 setTileSettings(4, {
                     type: 'LineGraph',
                     settings: {
-                        channel: 3,
-                        color: '#20ff05',
-                        domainY: [-5e6, 5e6]
+                        dataSeries: [
+                            {
+                                channel: 4,
+                                color: '#20ff05',
+                                domainY: [-5e4, 5e4]
+                            }
+                        ]
                     }
                 })
 
@@ -117,7 +137,7 @@ const TopBar = ({
                     settings: {
                         dataSeries: [
                             {
-                                channel: 107
+                                channel: 33
                             }
                         ],
                         overview: true
@@ -128,11 +148,11 @@ const TopBar = ({
                     settings: {
                         dataSeries: [
                             {
-                                channel: 3,
+                                channel: 49,
                                 color: '#0077ff'
                             },
                             {
-                                channel: 2,
+                                channel: 27,
                                 color: 'orange'
                             }
                         ],

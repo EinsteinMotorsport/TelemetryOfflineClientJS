@@ -1,30 +1,76 @@
 import React from 'react'
-import styled from 'styled-components'
-import { line } from 'd3-shape'
+import { scaleLinear } from 'd3-scale'
 
-const StyledPath = styled.path`
-    stroke: ${props => props.color};
-    fill: none;
-    stroke-width: 2px;
-    clip-path: url(#${props => props.clipId});
-`
+import ScaledCanvas from '../ScaledCanvas'
+import useOffscreenCanvasLine from '../../hooks/useOffscreenCanvasLine'
+
+const pixelRatio = window.devicePixelRatio || 1
 
 const Line = ({
-    dataPoints,
-    xScaler,
-    yScaler,
-    color,
-    clipId
+    channel,
+    innerWidth,
+    innerHeight,
+    posX,
+    posY,
+    domainX,
+    domainY,
+    color
 }) => {
 
-    const valueLine = line()
-        .x(d => xScaler(d.time))
-        .y(d => yScaler(d.value))
+    // Drawing is done in an OffscreenCanvas
+    const { 
+        offscreenImage, 
+        offscreenXScaler, // The request that was rendered in the OffscreenCanvas
+        fullyLoaded 
+    } = useOffscreenCanvasLine({
+        channel,
+        innerWidth,
+        innerHeight,
+        pixelRatio,
+        domainX,
+        domainY,
+        color
+    })
 
-    const linePath = valueLine(dataPoints)
+    // TODO requestAnimationFrame verwenden?
+    /**
+     * Copy the content of the OffscreenCanvas to the actual canvas with the required translation and scaling
+     * @param {*} context 
+     */
+    const draw = context => {
+        console.time('draw')
+
+        context.resetTransform()
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+
+        if (offscreenXScaler === null) { // Wenn es nichts zum Anzeigen gibt, dann soll auch nichts angezeigt werden
+            console.timeEnd('draw')
+            return
+        }
+
+        const curXScaler = scaleLinear()
+            .range([0, innerWidth])
+            .domain(domainX)
+
+        const translateX = offscreenXScaler(curXScaler.invert(0))
+        const scaleX = offscreenXScaler(curXScaler.invert(1)) - translateX
+
+        context.drawImage(offscreenImage, translateX * pixelRatio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
+        console.timeEnd('draw')
+    }
 
     return (
-        <StyledPath d={linePath} color={color} clipId={clipId} />
+        <>
+            <ScaledCanvas
+                width={innerWidth}
+                height={innerHeight}
+                posX={posX}
+                posY={posY}
+                draw={draw} />
+            {!fullyLoaded && 
+                <div>Loading</div>
+            }
+        </>
     )
 }
 

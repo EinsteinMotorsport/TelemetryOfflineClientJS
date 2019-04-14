@@ -6,19 +6,22 @@ import { createStore } from 'redux'
 import * as serviceWorker from './serviceWorker'
 import App from './components/App'
 import rootReducer from './reducers'
-import DataProvider from './containers/DataProvider'
 
 import './index.css'
+import MyDataSupplier from './data/MyDataSupplier'
+import DataSupplierContext from './data/dataSupplierContext'
 
 const store = createStore(rootReducer,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
 
+const dataSupplier = new MyDataSupplier()
+
 ReactDOM.render(
-    <DataProvider>
+    <DataSupplierContext.Provider value={dataSupplier}>
         <Provider store={store}>
             <App />
         </Provider>
-    </DataProvider>,
+    </DataSupplierContext.Provider>,
     document.getElementById('root')
 )
 

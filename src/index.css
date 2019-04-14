@@ -12,10 +12,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-
-/* TODO über styled-components integrieren */
-.zoom {
-  cursor: move;
-  fill: none;
-  pointer-events: all;
-}
