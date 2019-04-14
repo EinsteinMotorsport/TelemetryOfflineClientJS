@@ -33,7 +33,7 @@ const useWorker = ({
             sendNextTask()
         }
         return () => {
-            worker.current.terminate();
+            worker.current.terminate()
         }
     }, [])
 

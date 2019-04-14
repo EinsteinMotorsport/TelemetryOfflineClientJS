@@ -4,7 +4,7 @@ import { scaleLinear } from 'd3-scale'
 const ctx = self
 
 // Respond to message from parent thread
-ctx.addEventListener("message", (event) => {
+ctx.addEventListener('message', (event) => {
     //console.log("To worker", event)
     let result
     try {
@@ -32,7 +32,7 @@ function render({
         }
     }
 
-    console.time("offscreen-draw")
+    console.time('offscreen-draw')
 
     const requestedXScaler = scaleLinear()
         .range([0, innerWidth])
@@ -77,7 +77,7 @@ function render({
     offContext.strokeStyle = color
     offContext.stroke()
 
-    console.timeEnd("offscreen-draw")
+    console.timeEnd('offscreen-draw')
     return {
         offscreenImage: canvas.transferToImageBitmap(),
         offscreenWidth: width,

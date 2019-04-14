@@ -1,47 +1,141 @@
-import React from 'react'
-import { select, event } from 'd3-selection'
-import { brushX } from 'd3-brush'
+import React, { useRef, useEffect } from 'react'
+import styled from 'styled-components'
+import { scaleLinear } from 'd3-scale'
+
+const BrushArea = styled.div`
+    position: absolute;
+    top: 0;
+    left: ${props => props.left}px;
+    height: ${props => props.height}px;
+    right: 0;
+`
+
+const BrushSelection = styled.div`
+    position: absolute;
+    left: ${props => props.left}px;
+    top: 0;
+    width: ${props => props.width}px;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid #ffffff;
+    box-sizing: border-box;
+`
+
+const BrushHandleCenter = styled.div`
+    cursor: move;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+`
+
+const BrushHandle = styled.div`
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: ew-resize;
+`
+
+const BrushHandleLeft = styled(BrushHandle)`
+    left: -3px;
+`
+
+const BrushHandleRight = styled(BrushHandle)`
+    right: -3px;
+`
+
+// Todo in nicht markierten Bereich klicken und auswählen
 
 /**
  * Domain-Selektor: Markiert Bereich in Overview LineGraph
  */
 const Brush = ({
-    domainX,
+    left,
+    displayedDomainX,
+    brushDomainX,
     setDomainX,
     innerHeight,
-    innerWidth,
-    xScaler
+    innerWidth
 }) => {
 
-    function brushed() {
-        if (event.sourceEvent && event.sourceEvent.type === 'zoom') return // ignore brush-by-zoom
-        var s = event.selection || xScaler.range()
-        //setRange(s.map(xScaler.invert, xScaler))
-        const newRange = s.map(xScaler.invert, xScaler)
-        //console.log(newRange, range)
-        if (newRange[0] === domainX[0] && newRange[1] === domainX[1])
-            return
-        //console.log("Setze Range")
-        domainX = newRange // TODO Bad practice
-        setDomainX([newRange[0], newRange[1]])
-        //xFocus.domain(s.map(x.invert, x));
-        //focus.select(".area").attr("d", area);
-        //focus.select(".axis--x").call(xAxis);
-        /*select(".zoom").call(zoom.transform, d3ZoomIdentity
-            .scale(innerWidth / (s[1] - s[0]))
-            .translate(-s[0], 0));*/
+    const displayedXScaler = scaleLinear()
+        .range([0, innerWidth])
+        .domain(displayedDomainX)
+
+    const mouseX = useRef(null)
+    const moveHandle = useRef(null)
+
+    useEffect(() => {
+        const mouseUp = () => moveHandle.current = null
+        window.addEventListener('mouseup', mouseUp)
+        return () => window.removeEventListener('mouseup', mouseUp)
+    }, [])
+
+    useEffect(() => {
+        const mouseMove = event => {
+            if (moveHandle.current !== null) {
+                const delta = displayedXScaler.invert(event.pageX - mouseX.current)
+                mouseX.current = event.pageX
+                const domainX = [...brushDomainX]
+                if (moveHandle.current === 'right') {
+                    domainX[1] += delta
+                    domainX[1] = Math.min(domainX[1], displayedDomainX[1])
+
+                } else if (moveHandle.current === 'left') {
+                    domainX[0] += delta
+                    domainX[0] = Math.max(domainX[0], displayedDomainX[0])
+
+                } else if (moveHandle.current === 'center') {
+                    domainX[0] += delta
+                    domainX[1] += delta
+                    if (domainX[0] < displayedDomainX[0]) {
+                        domainX[1] -= domainX[0] - displayedDomainX[0]
+                        domainX[0] = displayedDomainX[0]
+                    }
+                    if (domainX[1] > displayedDomainX[1]) {
+                        domainX[0] -= domainX[1] - displayedDomainX[1]
+                        domainX[1] = displayedDomainX[1]
+                    }
+                }
+                setDomainX(domainX)
+            }
+        }
+        window.addEventListener('mousemove', mouseMove)
+        return () => window.removeEventListener('mousemove', mouseMove)
+    }, [brushDomainX, displayedDomainX, displayedXScaler, setDomainX])
+
+    const leftMouseDown = event => {
+        mouseX.current = event.pageX
+        moveHandle.current = 'left'
     }
 
-    const brush = brushX()
-        .extent([[0, 0], [innerWidth, innerHeight]])
-        .on('brush end', brushed)
+    const rightMouseDown = event => {
+        mouseX.current = event.pageX
+        moveHandle.current = 'right'
+    }
+
+    const centerMouseDown = event => {
+        mouseX.current = event.pageX
+        moveHandle.current = 'center'
+    }
 
     return (
-        <g ref={node => {
-            const d3Node = select(node)
-            brush(d3Node)
-            brush.move(d3Node, domainX.map(xScaler))
-        }}></g>
+        <BrushArea
+            left={left}
+            height={innerHeight}
+        >
+            <BrushSelection
+                top={0}
+                left={displayedXScaler(brushDomainX[0])}
+                width={displayedXScaler(brushDomainX[1] - brushDomainX[0])}
+            >
+                <BrushHandleLeft onMouseDown={leftMouseDown} />
+                <BrushHandleCenter onMouseDown={centerMouseDown} />
+                <BrushHandleRight onMouseDown={rightMouseDown} />
+            </BrushSelection>
+        </BrushArea>
     )
 }
 

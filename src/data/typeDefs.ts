@@ -19,17 +19,17 @@ export default interface DataPoint {
 }
 
 // Subscription Request
-export type SubRequest = ChannelDataSubRequest //| TotalDurationSubRequest | ChannelDefinitionsSubRequest TODO
+export type SubRequest = ChannelDataSubRequest | TotalDurationSubRequest | ChannelDefinitionsSubRequest
 
-/*export interface TotalDurationSubRequest {
-    type: "totalDuration"
+export interface TotalDurationSubRequest {
+    type: 'totalDuration'
     //source: string
 }
 
 export interface ChannelDefinitionsSubRequest {
     type: "channelDefinitions"
     //source: string
-}*/
+}
 
 export interface ChannelDataSubRequest {
     type: "channelData"
@@ -42,12 +42,17 @@ export interface ChannelDataSubRequest {
 /**
  * Subscribe Event that is passed to a SubEventHandler with new ChannelData or other stuff
  */
-export type SubEvent = ChannelDataSubEvent | "error"
+export type SubEvent = ChannelDataSubEvent | TotalDurationSubEvent | "error"
 
 export interface ChannelDataSubEvent {
     type: "channelData"
     fullyLoaded: boolean // if the data is completly loaded
     channelData: ChannelData
+}
+
+export interface TotalDurationSubEvent {
+    type: "totalDuration"
+    totalDuration: number
 }
 
 export interface DataSupplier {

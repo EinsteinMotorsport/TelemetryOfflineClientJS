@@ -1,4 +1,4 @@
-import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, SubEvent } from './typeDefs'
+import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, SubEvent, ChannelDataSubRequest } from './typeDefs'
 import HttpDataRetriever from './HttpDataRetriever'
 import { getIndexBeforeX, getDomainWithOverlap } from '../util'
 import simplify from '../util/simplify'
@@ -9,7 +9,7 @@ interface Subscription {
 }
 
 interface CacheEntry {
-    request: SubRequest
+    request: ChannelDataSubRequest
     channelData: ChannelData
     pendingRemove: boolean
 }
@@ -19,6 +19,7 @@ export default class MyDataSupplier implements DataSupplier {
     private subscriptions: Array<Subscription> = []
     private cache: Array<CacheEntry> = []
     private retrieving: boolean = false // if a retrieval is already in progress
+    private totalDuration = 0.02 * 50 * 60 * 15
 
 
     subscribe(request: SubRequest, changeHandler: SubEventHandler): void {
@@ -46,20 +47,29 @@ export default class MyDataSupplier implements DataSupplier {
         for (const entry of this.cache) {
             entry.pendingRemove = true
         }
-        
-        let toRetrieve = null // What to retrieve
-        for (const subscription of this.subscriptions) {
-            const { bestEntry, fullMatch } = this.findMatchingCacheEntry(subscription.subRequest)
-            if (bestEntry)
-                bestEntry.pendingRemove = false // This Cache entry is still in use
 
-            subscription.changeHandler({
-                type: "channelData",
-                channelData: bestEntry ? bestEntry.channelData : [],
-                fullyLoaded: fullMatch
-            })
-            if (!fullMatch && toRetrieve === null)
-                toRetrieve = subscription.subRequest
+        let toRetrieve: ChannelDataSubRequest | null = null // What to retrieve
+        for (const subscription of this.subscriptions) {
+            switch (subscription.subRequest.type) {
+                case 'totalDuration':
+                    subscription.changeHandler({
+                        type: 'totalDuration',
+                        totalDuration: this.totalDuration
+                    })
+                    break
+                case 'channelData':
+                    const { bestEntry, fullMatch } = this.findMatchingCacheEntry(subscription.subRequest)
+                    if (bestEntry)
+                        bestEntry.pendingRemove = false // This Cache entry is still in use
+
+                    subscription.changeHandler({
+                        type: "channelData",
+                        channelData: bestEntry ? bestEntry.channelData : [],
+                        fullyLoaded: fullMatch
+                    })
+                    if (!fullMatch && toRetrieve === null)
+                        toRetrieve = subscription.subRequest
+            }
         }
 
         // Cleanup
@@ -81,13 +91,13 @@ export default class MyDataSupplier implements DataSupplier {
      * Returns the best matching cache entry
      * @param subRequest 
      */
-    private findMatchingCacheEntry(subRequest: SubRequest): {
+    private findMatchingCacheEntry(subRequest: ChannelDataSubRequest): {
         bestEntry: CacheEntry | null
         fullMatch: boolean
-     } {
+    } {
         const bestResults = this.cache
-            .filter(entry => entry.request.channel === subRequest.channel)
-            .map(entry => ({ entry, score: this.calculateMatchScore(subRequest, entry.request)}))
+            .filter(entry => subRequest.channel === entry.request.channel)
+            .map(entry => ({ entry, score: this.calculateMatchScore(subRequest, entry.request) }))
             .sort((a, b) => b.score - a.score)
 
         //console.log(bestResults)
@@ -101,7 +111,7 @@ export default class MyDataSupplier implements DataSupplier {
             }
 
         //console.log("Requested:", subRequest, "Got:", bestResult.entry.request)
-        
+
         return {
             bestEntry: bestResult.entry,
             fullMatch: bestResult.score >= 1 // If Score >= 1, the CacheEntry fullfilles the request fully
@@ -114,8 +124,8 @@ export default class MyDataSupplier implements DataSupplier {
      * @param subRequest 
      * @param cacheRequest 
      */
-    private calculateMatchScore(subRequest: SubRequest, cacheRequest: SubRequest): number {
-        if (cacheRequest.type !== subRequest.type)
+    private calculateMatchScore<T>(subRequest: SubRequest, cacheRequest: SubRequest): number {
+        if (cacheRequest.type !== 'channelData' || subRequest.type !== 'channelData')
             return 0
 
         if (cacheRequest.channel !== subRequest.channel)
@@ -143,11 +153,11 @@ export default class MyDataSupplier implements DataSupplier {
      * Only call if this.retrieving is false
      * @param subRequest 
      */
-    private async retrieve(subRequest: SubRequest) {
+    private async retrieve(subRequest: ChannelDataSubRequest) {
         const generatedRequest = {
             ...subRequest,
             domainX: getDomainWithOverlap(subRequest.domainX) // Retrieve a bit more than necessary because the user might pan and zoom
-        } 
+        }
         this.retrieving = true
         try {
             const channelData = await this.retrieveChannelData(generatedRequest)
@@ -182,29 +192,32 @@ export default class MyDataSupplier implements DataSupplier {
      * Retrieves the channel data
      * @param request 
      */
-    private async retrieveChannelData(request: SubRequest): Promise<ChannelData> {
+    private async retrieveChannelData(request: ChannelDataSubRequest): Promise<ChannelData> {
         const channelData = await this.dataRetriever.retrieveChannelData(request.channel)
-        
+
         if (channelData === "notFound") {
             return channelData
         }
-        
+
         console.time("simplify")
 
         const from = Math.max(getIndexBeforeX(channelData, request.domainX[0]), 0)
         const to = Math.min(getIndexBeforeX(channelData, request.domainX[1]) + 2, channelData.length)
 
-        const data = simplify(
+        /*const data = simplify(
             channelData.slice(from, to),
             request.resolution, false)
 
-        console.timeEnd("simplify")
+        
 
-        return data
-            
-        /*const ratio = Math.floor((to - from) / 1000)
-        return channelData
+        return data*/
+
+        const ratio = Math.floor((to - from) / 1000)
+        const data = channelData
             .slice(from, to)
             .filter((_, index) => index % ratio === 0) // Todo*/
+
+        console.timeEnd("simplify")
+        return data
     }
 }

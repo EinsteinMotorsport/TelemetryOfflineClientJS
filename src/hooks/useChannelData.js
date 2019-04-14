@@ -6,7 +6,7 @@ const useChannelData = ({
     domainX: [domainXFrom, domainXTo],
     resolution
 }) => {
-    const [dataPoints, setDataPoints] = useState({
+    const [result, setResult] = useState({
         fullyLoaded: false,
         channelData: []
     })
@@ -15,19 +15,20 @@ const useChannelData = ({
     
     useEffect(() => {
         const dataRequest = {
+            type: 'channelData',
             channel,
             domainX: [domainXFrom, domainXTo],
             resolution
         }
         dataSupplier.subscribe(dataRequest, event => {
-            setDataPoints(event)
+            setResult(event)
         })
         return () => { // Effect-Cleanup
             dataSupplier.unsubscribe(dataRequest)
         }
-    }, [channel, domainXFrom, domainXTo, resolution]) // Split in primitive types so it can be identity compared
+    }, [dataSupplier, channel, domainXFrom, domainXTo, resolution]) // Split in primitive types so it can be identity compared
 
-    return dataPoints
+    return result
 }
 
 export default useChannelData

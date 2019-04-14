@@ -5,9 +5,7 @@ import styled from 'styled-components'
 
 import TestTile from '../components/TestTile'
 import LineGraph from '../components/LineGraph/'
-import LineGraphCanvas from '../components/LineGraphCanvas'
 import ValueTable from '../components/ValueTable'
-import DataContext from '../DataContext'
 import TileErrorBoundary from './TileErrorBoundary'
 
 import {
@@ -26,8 +24,7 @@ const StyledBody = styled.div`
 const tileTypes = {
     TestTile,
     LineGraph,
-    ValueTable,
-    LineGraphCanvas
+    ValueTable
 }
 
 const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleSettingsPopUp, setTileSettings, setDomainX }) => {

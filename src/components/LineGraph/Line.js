@@ -1,94 +1,77 @@
-import React, { Component } from 'react'
-import styled from 'styled-components'
-import { line } from 'd3-shape'
+import React from 'react'
 import { scaleLinear } from 'd3-scale'
 
-import { getDomainWithOverlap } from '../../util'
+import ScaledCanvas from '../ScaledCanvas'
+import useOffscreenCanvasLine from '../../hooks/useOffscreenCanvasLine'
 
-const StyledPath = styled.path`
-    stroke: ${props => props.color};
-    fill: none;
-    stroke-width: 2px;
-    clip-path: url(#${props => props.clipId});
-`
+const pixelRatio = window.devicePixelRatio || 1
 
-class Line extends Component {
+const Line = ({
+    channel,
+    innerWidth,
+    innerHeight,
+    posX,
+    posY,
+    domainX,
+    domainY,
+    color
+}) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            parameters: {},
+    // Drawing is done in an OffscreenCanvas
+    const { 
+        offscreenImage, 
+        offscreenXScaler, // The request that was rendered in the OffscreenCanvas
+        fullyLoaded 
+    } = useOffscreenCanvasLine({
+        channel,
+        innerWidth,
+        innerHeight,
+        pixelRatio,
+        domainX,
+        domainY,
+        color
+    })
+
+    // TODO requestAnimationFrame verwenden?
+    /**
+     * Copy the content of the OffscreenCanvas to the actual canvas with the required translation and scaling
+     * @param {*} context 
+     */
+    const draw = context => {
+        console.time('draw')
+
+        context.resetTransform()
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+
+        if (offscreenXScaler === null) { // Wenn es nichts zum Anzeigen gibt, dann soll auch nichts angezeigt werden
+            console.timeEnd('draw')
+            return
         }
-        //this.state = this._generateLine()
-    }
 
-    static getDerivedStateFromProps(props, state) {
-        if (props.dataPoints === state.dataPoints
-            && state.parameters.domainX
-            && props.domainX[0] >= state.parameters.domainX[0]
-            && props.domainX[1] <= state.parameters.domainX[1]
-        ) {
-            return null
-        }
-
-        return Line._generateLine(props)
-
-    }
-
-    static _generateLine(props) {
-        if (props.dataPoints === null) {
-            return {
-                loading: true
-            }
-        }
-
-        const domainX = getDomainWithOverlap(props.domainX)
-        //const domainY = this._getDomainWithOverlap(this.props.domainY)
-
-        const xScaler = scaleLinear()
-            .range([0, props.innerWidth])
+        const curXScaler = scaleLinear()
+            .range([0, innerWidth])
             .domain(domainX)
 
-        const yScaler = scaleLinear()
-            .range([props.innerHeight, 0])
-            .domain(props.domainY)
+        const translateX = offscreenXScaler(curXScaler.invert(0))
+        const scaleX = offscreenXScaler(curXScaler.invert(1)) - translateX
 
-        const valueLine = line()
-            .x(d => xScaler(d.time))
-            .y(d => yScaler(d.value))
-
-        const linePath = valueLine(props.dataPoints)
-
-        return {
-            loading: false,
-            linePath,
-            parameters: {
-                domainX
-            },
-            xScaler,
-            dataPoints: props.dataPoints
-        }
+        context.drawImage(offscreenImage, translateX * pixelRatio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
+        console.timeEnd('draw')
     }
 
-    render() {
-        if (this.state.loading) {
-            return <text>Keine Daten</text>
-        }
-
-        const xScaler = scaleLinear()
-            .range([0, this.props.innerWidth])
-            .domain(this.props.domainX)
-
-
-        const translateX = xScaler(this.state.xScaler.invert(0))
-        const scaleX = xScaler(this.state.xScaler.invert(1)) - translateX
-        //console.log(translateX, scaleX)
-
-        return (
-            <StyledPath d={this.state.linePath} color={this.props.color} clipId={this.props.clipId} 
-            transform={`translate(${translateX} ,0) scale(${scaleX}, 1)`}/>
-        )
-    }
+    return (
+        <>
+            <ScaledCanvas
+                width={innerWidth}
+                height={innerHeight}
+                posX={posX}
+                posY={posY}
+                draw={draw} />
+            {!fullyLoaded && 
+                <div>Loading</div>
+            }
+        </>
+    )
 }
 
 export default Line

@@ -7,24 +7,19 @@ class TileErrorBoundary extends React.Component {
     }
 
     static getDerivedStateFromError(error) {
-        console.log("hä")
         // Update state so the next render will show the fallback UI.
-        return { hasError: true };
+        return { hasError: true }
       }
 
     componentDidCatch(error, info) {
-        // Display fallback UI
-        this.setState({ hasError: true })
-        // You can also log the error to an error reporting service
-        //console.error('Error in Tile', error, info);
-        console.log("hä2")
+        console.error('Error in Tile', error, info)
     }
 
     render() {
         if (this.state.hasError) {
             // You can render any custom fallback UI
             return <>
-                <h1>Something went wrong.</h1>
+                <div>An Error occured in this Tile</div>
                 <button onClick={() => this.setState({
                     hasError: false
                 })}>Retry</button>
