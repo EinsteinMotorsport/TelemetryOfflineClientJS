@@ -26,25 +26,31 @@ const useOffscreenCanvasLine = ({
     const domainYTo = domainY[1]
 
     const { fullyLoaded, channelData } = useChannelData(request)
-    
-    // The request that was drawn on the OfscreenCanvas
-    const offscreenXScaler = useRef(null)
-    const fullyRendered = useRef(false)
 
-    const [offscreenImage, setOffscreenImage] = useState(null)
+    const [status, setStatus] = useState({
+        offscrenImage: null,
+        offscreenXScaler: null, // The request that was drawn on the OfscreenCanvas
+        fullyRendered: false
+    })
 
     const { setTask } = useWorker({ 
         Worker,
         handler(data, done) {
             if (data.offscreenImage === null) {
-                offscreenXScaler.current = null
+                setStatus({
+                    offscrenImage: null,
+                    offscreenXScaler: null,
+                    fullyRendered: true
+                })
             } else {
-                offscreenXScaler.current = scaleLinear()
-                    .range([0, data.offscreenWidth])
-                    .domain(data.offscreenDomain)
+                setStatus({
+                    offscrenImage: data.offscreenImage,
+                    offscreenXScaler: scaleLinear()
+                        .range([0, data.offscreenWidth])
+                        .domain(data.offscreenDomain),
+                    fullyRendered: done
+                })
             }
-            fullyRendered.current = done
-            setOffscreenImage(data.offscreenImage)
         }
     })
 
@@ -67,9 +73,9 @@ const useOffscreenCanvasLine = ({
     // TODO testen ob die Messserte auch an der richtigen Stelle dargestellt werden
 
     return {
-        offscreenImage,
-        offscreenXScaler: offscreenXScaler.current,
-        fullyLoaded: fullyLoaded && fullyRendered.current
+        offscreenImage: status.offscrenImage,
+        offscreenXScaler: status.offscreenXScaler,
+        fullyLoaded: fullyLoaded && status.fullyRendered
     }
 }
 

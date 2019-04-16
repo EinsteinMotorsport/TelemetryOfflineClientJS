@@ -204,15 +204,12 @@ export default class MyDataSupplier implements DataSupplier {
         const from = Math.max(getIndexBeforeX(channelData, request.domainX[0]), 0)
         const to = Math.min(getIndexBeforeX(channelData, request.domainX[1]) + 2, channelData.length)
 
-        /*const data = simplify(
+        const data = simplify(
             channelData.slice(from, to),
             request.resolution, false)
 
-        
 
-        return data*/
-
-        const ratio = Math.floor((to - from) / 1000)
+        /*const ratio = Math.floor((to - from) / 1000)
         const data = channelData
             .slice(from, to)
             .filter((_, index) => index % ratio === 0) // Todo*/

@@ -62,26 +62,26 @@ const LineGraph = ({
                 // Für jede dataSeries ein Graph
                 settings.dataSeries.map((series, index) => {
                     const domainY = series.domainY || [0, 1e5]//|| extent(dataPoints, d => d.value)
-                    return <Graph 
-                        key={index} 
-                        channel={series.channel} 
-                        innerWidth={innerWidth} 
-                        innerHeight={innerHeight} 
-                        domainX={displayedDomainX} 
-                        domainY={domainY} 
-                        color={series.color} 
+                    return <Graph
+                        key={index}
+                        channel={series.channel}
+                        innerWidth={innerWidth}
+                        innerHeight={innerHeight}
+                        domainX={displayedDomainX}
+                        domainY={domainY}
+                        color={series.color}
                         marginLeft={margin.left}
                         marginBottom={margin.bottom}
-                        />
+                    />
                 })
             }
             {
                 cursorX !== null &&
-                    <CursorLine left={margin.left} posX={cursorX} innerWidth={innerWidth} domainX={displayedDomainX} />
+                <CursorLine left={margin.left} posX={cursorX} innerWidth={innerWidth} domainX={displayedDomainX} />
             }
             {
                 settings.overview &&
-                    <Brush left={margin.left} displayedDomainX={displayedDomainX} brushDomainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />
+                <Brush left={margin.left} displayedDomainX={displayedDomainX} brushDomainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />
             }
 
         </StyledDiv>

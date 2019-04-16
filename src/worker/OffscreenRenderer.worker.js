@@ -9,7 +9,7 @@ ctx.addEventListener('message', (event) => {
     let result
     try {
         result = render(event.data)
-    } catch(e) {
+    } catch (e) {
         console.error('Worker error', e)
         result = null
     }
@@ -47,6 +47,10 @@ function render({
     const maxTime = channelData[channelData.length - 1].time
     const offset = requestedXScaler(minTime)
     const width = (requestedXScaler(maxTime) - offset)
+    if (width === 0)
+        return {
+            offscreenImage: null
+        }
     const canvas = new OffscreenCanvas(width * pixelRatio, innerHeight * pixelRatio)
 
     //console.log(`Canvas ${canvas.width}x${canvas.height}`)

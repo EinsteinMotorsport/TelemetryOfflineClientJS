@@ -50,15 +50,17 @@ const Tile = ({ tileId, path, size, tileSettings, selection, setCursorX, toggleS
                     setCursorX
                 }
             }} >
-            <StyledBody onContextMenu={event => {
-                toggleSettingsPopUp(tileId)
-                event.preventDefault()
-            }}>
-                <TileErrorBoundary>
-                    {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
-                    <TileType {...tileProps} />
-                </TileErrorBoundary>
-            </StyledBody>
+            {tileProps.width > 0 && tileProps.height > 0 &&
+                <StyledBody onContextMenu={event => {
+                    toggleSettingsPopUp(tileId)
+                    event.preventDefault()
+                }}>
+                    <TileErrorBoundary>
+                        {/* TODO Subtraktion von Höhe und Breite an Style koppelbar? */}
+                        <TileType {...tileProps} />
+                    </TileErrorBoundary>
+                </StyledBody>
+            }
         </MosaicWindow>
     )
 }
