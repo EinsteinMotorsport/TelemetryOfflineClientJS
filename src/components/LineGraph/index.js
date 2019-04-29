@@ -60,7 +60,7 @@ const LineGraph = ({
             {
                 // Für jede dataSeries ein Graph
                 settings.dataSeries.map((series, index) => {
-                    const domainY = series.domainY || [0, 1e5]//|| extent(dataPoints, d => d.value)
+                    const domainY = series.domainY || [0, 1e5]
                     return <Graph
                         key={index}
                         channel={series.channel}
@@ -82,7 +82,6 @@ const LineGraph = ({
                 settings.overview &&
                 <Brush left={margin.left} displayedDomainX={displayedDomainX} brushDomainX={domainX} setDomainX={setDomainX} innerHeight={innerHeight} innerWidth={innerWidth} xScaler={xScaler} />
             }
-
         </StyledDiv>
     )
 }

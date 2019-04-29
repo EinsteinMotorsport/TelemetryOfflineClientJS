@@ -1,4 +1,4 @@
-import { DataRetriever, ChannelData, ChannelDefinition, ChannelId } from "./typeDefs";
+import { DataRetriever, ChannelData, ChannelDefinition, ChannelId } from './typeDefs'
 
 export default class HttpDataRetriever implements DataRetriever {
     async retrieveChannelDefinitions(): Promise<Array<ChannelDefinition>> {

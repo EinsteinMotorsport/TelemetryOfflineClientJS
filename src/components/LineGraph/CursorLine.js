@@ -15,7 +15,7 @@ const Line = styled.div.attrs(props => ({
 `
 
 /**
- * Shows a Cross Hair at the desired x position on the graph
+ * Shows a vertical line at the desired x position on the graph
  */
 const CrossHair = ({
     left,

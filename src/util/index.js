@@ -5,7 +5,6 @@ export const getIndexBeforeX = (dataPoints, x) => {
     return bisect(dataPoints, x) - 1
 }
 
-// TODO soll wirklich der Punkt verwendet werden, der am nahesten dran ist?
 export const getClosestDataPoint = (dataPoints, x) => {
     const index = getIndexBeforeX(dataPoints, x)
     const before = dataPoints[index]

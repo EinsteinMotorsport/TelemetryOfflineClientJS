@@ -4,9 +4,11 @@ import Line from './Line'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
 
+/**
+ * 
+ */
 const Graph = ({
     channel,
-    clipId,
     innerWidth,
     innerHeight,
     domainX,
@@ -29,7 +31,8 @@ const Graph = ({
 }
 
 /**
- * Entscheidet ob die Component neu gerendert werden muss
+ * Decides whether to rerender the component
+ * Prevent unnecessary rerenders
  */
 const areEqual = (prevProps, nextProps) => {
     const keys = Object.keys(nextProps)

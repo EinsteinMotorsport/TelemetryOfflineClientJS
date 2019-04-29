@@ -9,6 +9,9 @@ const StyledCanvas = styled.canvas`
     height: ${props => props.cssHeight}px;
 `
 
+/**
+ * Pixel density aware canvas. For hidpi displays
+ */
 const ScaledCanvas = ({
     posX,
     posY,

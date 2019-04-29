@@ -4,6 +4,7 @@ import { scaleLinear } from 'd3-scale'
 import ScaledCanvas from '../ScaledCanvas'
 import useOffscreenCanvasLine from '../../hooks/useOffscreenCanvasLine'
 
+// Scale factor for retina and other hidpi displays
 const pixelRatio = window.devicePixelRatio || 1
 
 const Line = ({
@@ -33,18 +34,17 @@ const Line = ({
     })
 
     // TODO requestAnimationFrame verwenden?
+
     /**
      * Copy the content of the OffscreenCanvas to the actual canvas with the required translation and scaling
      * @param {*} context 
      */
     const draw = context => {
-        console.time('draw')
 
         context.resetTransform()
         context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
         if (offscreenXScaler === null) { // Wenn es nichts zum Anzeigen gibt, dann soll auch nichts angezeigt werden
-            console.timeEnd('draw')
             return
         }
 
@@ -55,8 +55,8 @@ const Line = ({
         const translateX = offscreenXScaler(curXScaler.invert(0))
         const scaleX = offscreenXScaler(curXScaler.invert(1)) - translateX
 
+        // Display offscreen rendered image ajusted in position and scaling
         context.drawImage(offscreenImage, translateX * pixelRatio, 0, scaleX * context.canvas.width, context.canvas.height, 0, 0, context.canvas.width, context.canvas.height)
-        console.timeEnd('draw')
     }
 
     return (

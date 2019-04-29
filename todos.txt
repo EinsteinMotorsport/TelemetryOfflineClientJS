@@ -1,6 +1,8 @@
+Kommentare
 Rechts Channelsliste mit Suche und Reinziehen
 unabhängige Y-Achse
 Legende oben rechts
 Einstellungen Sklaierung und automaitsch
 Kosmetik
 Fadenkreuz X- und Y-Wert als Zahl und Y-Fadenkreuz dünner
+Achsen mit dynamischer Anzahl Ticks

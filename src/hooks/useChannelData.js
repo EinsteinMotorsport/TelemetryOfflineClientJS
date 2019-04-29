@@ -26,7 +26,7 @@ const useChannelData = ({
         return () => { // Effect-Cleanup
             dataSupplier.unsubscribe(dataRequest)
         }
-    }, [dataSupplier, channel, domainXFrom, domainXTo, resolution]) // Split in primitive types so it can be identity compared
+    }, [dataSupplier, channel, domainXFrom, domainXTo, resolution]) // Split in primitive types so it can be identity compared by React
 
     return result
 }

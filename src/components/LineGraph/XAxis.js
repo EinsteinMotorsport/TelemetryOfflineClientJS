@@ -40,8 +40,9 @@ const XAxis = ({
 
         context.textAlign = 'center'
         context.textBaseline = 'top'
-        ticks.forEach(d => 
-            context.fillText(tickFormat(d), extendLeft + xScaler(d), tickSize))
+        ticks.forEach(d =>
+            context.fillText(tickFormat(d), extendLeft + xScaler(d), tickSize)
+        )
     }
 
     return (

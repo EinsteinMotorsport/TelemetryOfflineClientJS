@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import useChannelData from './useChannelData'
 import { scaleLinear } from 'd3-scale'
 
@@ -36,7 +36,7 @@ const useOffscreenCanvasLine = ({
     const { setTask } = useWorker({ 
         Worker,
         handler(data, done) {
-            if (data.offscreenImage === null) {
+            if (data.offscreenImage === null) { // No image returned because nothing should be displayed
                 setStatus({
                     offscrenImage: null,
                     offscreenXScaler: null,
@@ -76,7 +76,7 @@ const useOffscreenCanvasLine = ({
     return {
         offscreenImage: status.offscrenImage,
         offscreenXScaler: status.offscreenXScaler,
-        fullyLoaded: fullyLoaded && status.fullyRendered
+        fullyLoaded: fullyLoaded && status.fullyRendered // It's only fully loaded if both the channel data and the offscreen renderer are fully done
     }
 }
 

@@ -4,8 +4,7 @@ import { scaleLinear } from 'd3-scale'
 const ctx = self
 
 // Respond to message from parent thread
-ctx.addEventListener('message', (event) => {
-    //console.log("To worker", event)
+ctx.addEventListener('message', event => {
     let result
     try {
         result = render(event.data)
@@ -14,7 +13,7 @@ ctx.addEventListener('message', (event) => {
         result = null
     }
     ctx.postMessage(result)
-});
+})
 
 function render({
     channelData,
@@ -76,7 +75,7 @@ function render({
     offContext.clearRect(0, 0, offContext.canvas.width, offContext.canvas.height)
 
     offContext.beginPath()
-    contextedValueLine(channelData)
+    contextedValueLine(channelData) // D3 draws channelData
     offContext.lineWidth = 2
     offContext.strokeStyle = color
     offContext.stroke()

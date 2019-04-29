@@ -2,6 +2,9 @@ import React, { useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { scaleLinear } from 'd3-scale'
 
+/**
+ * Complete surface of the graph to be able to drag the brush to every position
+ */
 const BrushArea = styled.div`
     position: absolute;
     top: 0;
@@ -10,6 +13,9 @@ const BrushArea = styled.div`
     right: 0;
 `
 
+/**
+ * Selected area
+ */
 const BrushSelection = styled.div.attrs(props => ({
     /*
         Use style attribute for left and width css attribute to improve performance
@@ -84,22 +90,22 @@ const Brush = ({
 
     useEffect(() => {
         const mouseMove = event => {
-            if (moveHandle.current !== null) {
-                const delta = displayedXScaler.invert(event.pageX - mouseX.current)
+            if (moveHandle.current !== null) { // Mouse was pressed previously
+                const delta = displayedXScaler.invert(event.pageX - mouseX.current) // Calc delta in channel time unit
                 mouseX.current = event.pageX
                 const domainX = [...brushDomainX]
-                if (moveHandle.current === 'right') {
+                if (moveHandle.current === 'right') { // right handle (extend right)
                     domainX[1] += delta
                     domainX[1] = Math.min(domainX[1], displayedDomainX[1])
 
-                } else if (moveHandle.current === 'left') {
+                } else if (moveHandle.current === 'left') { // left handle (extend left)
                     domainX[0] += delta
                     domainX[0] = Math.max(domainX[0], displayedDomainX[0])
 
-                } else if (moveHandle.current === 'center') {
+                } else if (moveHandle.current === 'center') { // center handle (move)
                     domainX[0] += delta
                     domainX[1] += delta
-                    if (domainX[0] < displayedDomainX[0]) {
+                    if (domainX[0] < displayedDomainX[0]) { // Prevent moving out of displayed area
                         domainX[1] -= domainX[0] - displayedDomainX[0]
                         domainX[0] = displayedDomainX[0]
                     }
@@ -136,7 +142,6 @@ const Brush = ({
             height={innerHeight}
         >
             <BrushSelection
-                top={0}
                 left={displayedXScaler(brushDomainX[0])}
                 width={displayedXScaler(brushDomainX[1] - brushDomainX[0])}
             >
