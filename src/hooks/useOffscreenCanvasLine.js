@@ -71,6 +71,7 @@ const useOffscreenCanvasLine = ({
 
     }, [channelData, domainYFrom, domainYTo, color, innerWidth, innerHeight, pixelRatio])
     // TODO testen ob die Messserte auch an der richtigen Stelle dargestellt werden
+    // TODO domainY mit einbeziehen in Skalierung in Line
 
     return {
         offscreenImage: status.offscrenImage,

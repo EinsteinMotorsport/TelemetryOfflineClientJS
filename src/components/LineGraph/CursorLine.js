@@ -2,9 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 import { scaleLinear } from 'd3-scale'
 
-const Line = styled.div`
+const Line = styled.div.attrs(props => ({
+    style: { // Use style attribute to improve performance. See Brush.js
+        left: props.posX - 1 + 'px',
+    }
+}))`
     position: absolute;
-    left: ${props => props.posX - 1}px;
     top: 0;
     width: 2px;
     bottom: 0;

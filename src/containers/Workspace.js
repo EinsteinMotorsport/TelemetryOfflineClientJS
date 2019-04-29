@@ -115,5 +115,3 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(Workspace)
-
-// TODO Redux State nur bei fertigem Resize und fertigem Draggen verändern und nicht ständig

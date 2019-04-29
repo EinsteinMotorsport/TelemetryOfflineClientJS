@@ -27,7 +27,6 @@ const LineGraph = ({
         setCursorX
     }
 }) => {
-    // Todo Retina
     const margin = { top: 0, right: 0, bottom: 20, left: 40 }
     const innerWidth = width - margin.left - margin.right
     const innerHeight = height - margin.top - margin.bottom

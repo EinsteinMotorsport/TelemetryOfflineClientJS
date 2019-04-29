@@ -10,11 +10,19 @@ const BrushArea = styled.div`
     right: 0;
 `
 
-const BrushSelection = styled.div`
+const BrushSelection = styled.div.attrs(props => ({
+    /*
+        Use style attribute for left and width css attribute to improve performance
+        otherwise a new css class is generated on each change of the properties. See 
+        See https://github.com/styled-components/styled-components/issues/134#issuecomment-312415291
+    */
+    style: {
+        left: `${props.left}px`,
+        width: `${props.width}px`
+    }
+}))`
     position: absolute;
-    left: ${props => props.left}px;
     top: 0;
-    width: ${props => props.width}px;
     bottom: 0;
     background-color: rgba(255, 255, 255, 0.2);
     border: 1px solid #ffffff;
@@ -36,6 +44,7 @@ const BrushHandle = styled.div`
     bottom: 0;
     width: 6px;
     cursor: ew-resize;
+    z-index: 10;
 `
 
 const BrushHandleLeft = styled(BrushHandle)`
