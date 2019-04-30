@@ -12,7 +12,7 @@ interface Subscription {
 interface CacheEntry {
     request: ChannelDataSubRequest
     channelData: ChannelData
-    pendingRemove: boolean
+    expiration?: number
 }
 
 export default class MyDataSupplier implements DataSupplier {
@@ -43,11 +43,10 @@ export default class MyDataSupplier implements DataSupplier {
      *  and notifies the subscribers
      */
     private updateCache() {
-        // Remember which entry should be removed
-        const lastPendingRemovals = this.cache.filter(entry => entry.pendingRemove)
-        // Set all cache entries to for removal and set the ones that are in use to false later
+        // Set all cache entries to for removal and set the ones that are in use to undefined later
         for (const entry of this.cache) {
-            entry.pendingRemove = true
+            if (entry.expiration === undefined)
+                entry.expiration = Date.now() + 1e3 // Should expire in 1 second
         }
 
         let toRetrieve: ChannelDataSubRequest | null = null // What to retrieve
@@ -62,7 +61,7 @@ export default class MyDataSupplier implements DataSupplier {
                 case 'channelData':
                     const { bestEntry, fullMatch } = this.findMatchingCacheEntry(subscription.subRequest)
                     if (bestEntry)
-                        bestEntry.pendingRemove = false // This Cache entry is still in use
+                        bestEntry.expiration = undefined // This Cache entry is still in use
 
                     subscription.changeHandler({
                         type: "channelData",
@@ -75,8 +74,8 @@ export default class MyDataSupplier implements DataSupplier {
         }
 
         // Cleanup
-        for (const entry of lastPendingRemovals) {
-            if (entry.pendingRemove) { // Nur die entfernen, die immer noch entfernt werden sollen
+        for (const entry of this.cache) {
+            if (entry.expiration !== undefined && entry.expiration <= Date.now()) { // Nur die entfernen, die immer noch entfernt werden sollen
                 const index = this.cache.indexOf(entry)
                 this.cache.splice(index, 1)
             }
@@ -85,8 +84,6 @@ export default class MyDataSupplier implements DataSupplier {
         if (!this.retrieving && toRetrieve) { // Only retrieve if no other retrieval is already in progress
             this.retrieve(toRetrieve)
         }
-
-        //console.log(this.cache)
     }
 
     /**
@@ -106,11 +103,12 @@ export default class MyDataSupplier implements DataSupplier {
 
         const bestResult = bestResults[0]
 
-        if (!bestResult)
+        if (!bestResult) {
             return {
                 bestEntry: null,
                 fullMatch: false
             }
+        }
 
         //console.log("Requested:", subRequest, "Got:", bestResult.entry.request)
 
@@ -165,8 +163,7 @@ export default class MyDataSupplier implements DataSupplier {
             const channelData = await this.retrieveChannelData(generatedRequest)
             this.cache.push({
                 request: generatedRequest,
-                channelData,
-                pendingRemove: false
+                channelData
             })
         } finally {
             this.retrieving = false
