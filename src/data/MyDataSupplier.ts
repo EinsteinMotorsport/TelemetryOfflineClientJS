@@ -1,7 +1,8 @@
 import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, SubEvent, ChannelDataSubRequest } from './typeDefs'
 import HttpDataRetriever from './HttpDataRetriever'
-import { getIndexBeforeX, getDomainWithOverlap } from '../util'
-import simplify from '../util/simplify'
+import { getDomainWithOverlap } from '../util'
+import { createWorkerFunction } from '../util/workerAsync'
+import SimplifierWorker from '../worker/Simplifier.worker'
 
 interface Subscription {
     subRequest: SubRequest
@@ -16,6 +17,7 @@ interface CacheEntry {
 
 export default class MyDataSupplier implements DataSupplier {
     private dataRetriever: DataRetriever = new HttpDataRetriever()
+    private simplifyFunction = createWorkerFunction(SimplifierWorker)
     private subscriptions: Array<Subscription> = []
     private cache: Array<CacheEntry> = []
     private retrieving: boolean = false // if a retrieval is already in progress
@@ -199,20 +201,19 @@ export default class MyDataSupplier implements DataSupplier {
             return channelData
         }
 
+        
         console.time("simplify")
+        console.time("simplify-self")
 
-        const from = Math.max(getIndexBeforeX(channelData, request.domainX[0]), 0)
-        const to = Math.min(getIndexBeforeX(channelData, request.domainX[1]) + 2, channelData.length)
-
-        const data = simplify(
-            channelData.slice(from, to),
-            request.resolution, false)
-
-
-        /*const ratio = Math.floor((to - from) / 1000)
-        const data = channelData
-            .slice(from, to)
-            .filter((_, index) => index % ratio === 0) // Todo*/
+        const sharedBuffer = new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * channelData.length * 2)
+        const sharedArray = new Float64Array(sharedBuffer)
+        for (let i = 0; i < channelData.length; i++) {
+            sharedArray[i * 2] = channelData[i].time
+            sharedArray[i * 2 + 1] = channelData[i].value
+        }
+        
+        console.timeEnd("simplify-self")
+        const data = await this.simplifyFunction(sharedBuffer, request.domainX, request.resolution)
 
         console.timeEnd("simplify")
         return data
