@@ -45,7 +45,7 @@ function render({
     const minTime = channelData[0].time
     const maxTime = channelData[channelData.length - 1].time
     const offset = requestedXScaler(minTime)
-    const width = Math.ceil(requestedXScaler(maxTime) - offset)
+    const width = Math.min(Math.ceil(requestedXScaler(maxTime) - offset), innerWidth * pixelRatio * 5) // Limit to 5x the displayed canvas
     if (width === 0)
         return {
             offscreenImage: null
