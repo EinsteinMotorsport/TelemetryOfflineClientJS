@@ -96,11 +96,13 @@ const Brush = ({
                 const domainX = [...brushDomainX]
                 if (moveHandle.current === 'right') { // right handle (extend right)
                     domainX[1] += delta
-                    domainX[1] = Math.min(domainX[1], displayedDomainX[1])
+                    domainX[1] = Math.min(domainX[1], displayedDomainX[1]) // Not greater than totalDuration
+                    domainX[1] = Math.max(domainX[1], domainX[0]) // Not less than left domain boundary
 
                 } else if (moveHandle.current === 'left') { // left handle (extend left)
                     domainX[0] += delta
-                    domainX[0] = Math.max(domainX[0], displayedDomainX[0])
+                    domainX[0] = Math.max(domainX[0], displayedDomainX[0]) // Not less than 0
+                    domainX[0] = Math.min(domainX[0], domainX[1]) // Not greater than right domain boundary
 
                 } else if (moveHandle.current === 'center') { // center handle (move)
                     domainX[0] += delta
