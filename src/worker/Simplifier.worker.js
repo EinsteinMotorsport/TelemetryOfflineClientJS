@@ -1,6 +1,7 @@
 import simplify from '../util/simplify'
 import { registerWorker } from '../util/workerAsync'
 import { getIndexBeforeX, getIndexBeforeXTyped } from '../util'
+import { simplifytest } from '../util/simplifytest'
 
 registerWorker(self, (sharedBuffer, domainX, resolution) => {
     console.time('simplifyInner')
@@ -8,7 +9,7 @@ registerWorker(self, (sharedBuffer, domainX, resolution) => {
     const from = Math.max(getIndexBeforeXTyped(sharedArray, domainX[0]), 0)
     const to = Math.min(getIndexBeforeXTyped(sharedArray, domainX[1]) + 2, sharedArray.length / 2)
 
-    const data = simplify(
+    const data = simplifytest(
         sharedArray.subarray(from * 2, to * 2),
         resolution, true)
 
