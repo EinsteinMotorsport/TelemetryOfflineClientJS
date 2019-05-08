@@ -137,6 +137,9 @@ export default class MyDataSupplier implements DataSupplier {
         const cacheLength = right - left
         const subLength = subRequest.domainX[1] - subRequest.domainX[0]
 
+        if (subLength === 0)
+            return 1 / Math.abs(cacheLength)
+
         // Do not consider the resolution of cacheRequest if it is more accurately than subRequest's
         const resolution = Math.max(cacheRequest.resolution, subRequest.resolution)
 
