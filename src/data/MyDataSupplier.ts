@@ -154,7 +154,7 @@ export default class MyDataSupplier implements DataSupplier {
         // Do not consider the resolution of cacheRequest if it is more accurately than subRequest's
         const resolution = Math.max(cacheRequest.resolution, subRequest.resolution) 
         // if resolution is 0 (cache and request resolution is 0) => perfect
-        const resolutionRatio = resolution === 0 ? 1 : subRequest.resolution / resolution 
+        const resolutionRatio = resolution === 0 ? 1 : subRequest.resolution / resolution
 
         const score = areaRatio * resolutionRatio * 1000
         // Score should now be something between 0 and 1000

@@ -50,7 +50,7 @@ const LineGraph = ({
 
 
     const onMouseMove = event => {
-        const x = event.screenX - divRef.current.getBoundingClientRect().x - margin.left
+        const x = event.pageX - divRef.current.getBoundingClientRect().x - margin.left
         const xPos = xScaler.invert(x)
         setCursorX(xPos)
     }

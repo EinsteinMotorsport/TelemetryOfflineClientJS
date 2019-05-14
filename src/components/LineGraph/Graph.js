@@ -4,10 +4,8 @@ import Line from './Line'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
 import HorizontalCursor from './HorizontalCursor'
+import ValueCursor from './ValueCursor'
 
-/**
- * 
- */
 const Graph = ({
     channel,
     innerWidth,
@@ -29,6 +27,7 @@ const Graph = ({
             <XAxis posX={marginLeft} posY={innerHeight} width={innerWidth} height={marginBottom} extendLeft={marginLeft} domainX={domainX} />
             <YAxis posX={0} posY={0} width={marginLeft} height={innerHeight} extendBottom={marginBottom} domainY={domainY} />
             <HorizontalCursor channel={channel} left={marginLeft} cursorX={cursorX} innerHeight={innerHeight} domainY={domainY} />
+            <ValueCursor channel={channel} cursorX={cursorX} />
         </>
     )
 }
