@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 
 import TestTile from '../components/TestTile'
-import LineGraph from '../components/LineGraph/'
+import LineGraph from '../components/LineGraph'
 import ValueTable from '../components/ValueTable'
 import TileErrorBoundary from './TileErrorBoundary'
 

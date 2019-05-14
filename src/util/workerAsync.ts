@@ -8,11 +8,9 @@ export function createWorkerFunction(MyWorker: any): (...args: any[]) => Promise
     })
 
     return (...args) => {
-        console.time("post")
         return new Promise(resolve => {
             resolutions.push(resolve)
             worker.postMessage(args)
-            console.timeEnd("post")
         })
         
     }

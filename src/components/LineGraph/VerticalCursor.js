@@ -17,9 +17,9 @@ const Line = styled.div.attrs(props => ({
 /**
  * Shows a vertical line at the desired x position on the graph
  */
-const CrossHair = ({
+const VerticalCursor = ({
     left,
-    posX,
+    cursorX,
     innerWidth,
     domainX
 }) => {
@@ -29,8 +29,8 @@ const CrossHair = ({
         .domain(domainX)
 
     return (
-        <Line posX={left + xScaler(posX)} />
+        <Line posX={left + xScaler(cursorX)} />
     )
 }
 
-export default CrossHair
+export default VerticalCursor

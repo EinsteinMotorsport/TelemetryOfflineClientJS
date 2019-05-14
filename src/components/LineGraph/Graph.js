@@ -3,6 +3,7 @@ import React from 'react'
 import Line from './Line'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
+import HorizontalCursor from './HorizontalCursor'
 
 /**
  * 
@@ -15,7 +16,8 @@ const Graph = ({
     domainY,
     color,
     marginLeft,
-    marginBottom
+    marginBottom,
+    cursorX
 }) => {
 
     if (!color)
@@ -26,6 +28,7 @@ const Graph = ({
             <Line channel={channel} posX={marginLeft} posY={0} innerWidth={innerWidth} innerHeight={innerHeight} domainX={domainX} domainY={domainY} color={color} />
             <XAxis posX={marginLeft} posY={innerHeight} width={innerWidth} height={marginBottom} extendLeft={marginLeft} domainX={domainX} />
             <YAxis posX={0} posY={0} width={marginLeft} height={innerHeight} extendBottom={marginBottom} domainY={domainY} />
+            <HorizontalCursor channel={channel} left={marginLeft} cursorX={cursorX} innerHeight={innerHeight} domainY={domainY} />
         </>
     )
 }

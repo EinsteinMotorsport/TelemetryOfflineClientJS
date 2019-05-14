@@ -1,6 +1,6 @@
-import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, SubEvent, ChannelDataSubRequest } from './typeDefs'
+import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, ChannelDataSubRequest } from './typeDefs'
 import HttpDataRetriever from './HttpDataRetriever'
-import { getDomainWithOverlap } from '../util'
+import { getDomainWithOverlap, getOverlappingArea, getArea } from '../util'
 import { createWorkerFunction } from '../util/workerAsync'
 import SimplifierWorker from '../worker/Simplifier.worker'
 
@@ -75,7 +75,7 @@ export default class MyDataSupplier implements DataSupplier {
 
         // Cleanup
         for (const entry of this.cache) {
-            if (entry.expiration !== undefined && entry.expiration <= Date.now()) { // Nur die entfernen, die immer noch entfernt werden sollen
+            if (entry.expiration !== undefined && entry.expiration <= Date.now()) {
                 const index = this.cache.indexOf(entry)
                 this.cache.splice(index, 1)
             }
@@ -95,11 +95,9 @@ export default class MyDataSupplier implements DataSupplier {
         fullMatch: boolean
     } {
         const bestResults = this.cache
-            .filter(entry => subRequest.channel === entry.request.channel)
             .map(entry => ({ entry, score: this.calculateMatchScore(subRequest, entry.request) }))
+            .filter(entry => entry.score >= 0) // Score < 0 means useless for the request
             .sort((a, b) => b.score - a.score)
-
-        //console.log(bestResults)
 
         const bestResult = bestResults[0]
 
@@ -110,45 +108,60 @@ export default class MyDataSupplier implements DataSupplier {
             }
         }
 
-        //console.log("Requested:", subRequest, "Got:", bestResult.entry.request)
-
         return {
             bestEntry: bestResult.entry,
-            fullMatch: bestResult.score >= 1 // If Score >= 1, the CacheEntry fullfilles the request fully
+            fullMatch: bestResult.score >= 1000 // If Score > 1000, the CacheEntry fullfilles the request fully
         }
     }
 
     /**
      * Rates how good the cacheRequest matches the subRequest
-     * >= 1 means full match
+     * score < 0 Does not make any sense to use this cacheRequest for this subRequest (e.g. wrong channel)
+     * 0 <= score < 1000: Useful but request is not fully satisfied (e.g. only partly covered; resolution too low)
+     * 1000 <= score < 2000: Fully satisfied but still room for a better option. If idle can retrieve bet version (e.g. cache domainX larger; cache resolution larger)
+     * 2000 <= score: Fully satisfied; There cannot be any better option
      * @param subRequest 
      * @param cacheRequest 
      */
-    private calculateMatchScore<T>(subRequest: SubRequest, cacheRequest: SubRequest): number {
+    private calculateMatchScore<T>(subRequest: ChannelDataSubRequest, cacheRequest: ChannelDataSubRequest): number {
         if (cacheRequest.type !== 'channelData' || subRequest.type !== 'channelData')
-            return 0
+            return -2
 
         if (cacheRequest.channel !== subRequest.channel)
-            return 0
+            return -1
 
-        // Only consider the part of cacheRequest's domain that is inside subRequest's domain
-        const left = Math.max(cacheRequest.domainX[0], subRequest.domainX[0])
-        const right = Math.min(cacheRequest.domainX[1], subRequest.domainX[1])
-        const cacheLength = right - left
-        const subLength = subRequest.domainX[1] - subRequest.domainX[0]
+        if (subRequest.domainX[0] === cacheRequest.domainX[0]
+            && subRequest.domainX[1] === cacheRequest.domainX[1]
+            && subRequest.resolution === cacheRequest.resolution) // Perfect match
+            return 2000
 
-        if (subLength === 0)
-            return 1 / Math.abs(cacheLength)
+        const overlapArea = getOverlappingArea(subRequest.domainX, cacheRequest.domainX)
+        const subRequestArea = getArea(subRequest.domainX)
+        let areaRatio
+        if (subRequestArea === 0) { // Then it only wants the 1 point nearest to domainX
+            if (cacheRequest.domainX[1] >= cacheRequest.domainX[0] 
+                && cacheRequest.domainX[0] <= subRequest.domainX[0]
+                && cacheRequest.domainX[1] >= subRequest.domainX[1]
+                ) { // cache contains this point?
+                    areaRatio = 1 // Perfect
+                } else {
+                    areaRatio = 0 // Useless
+                }
+        } else {
+            areaRatio = overlapArea / subRequestArea // Calc the ratio the cache covers the request area
+        }
 
         // Do not consider the resolution of cacheRequest if it is more accurately than subRequest's
-        const resolution = Math.max(cacheRequest.resolution, subRequest.resolution)
+        const resolution = Math.max(cacheRequest.resolution, subRequest.resolution) 
+        // if resolution is 0 (cache and request resolution is 0) => perfect
+        const resolutionRatio = resolution === 0 ? 1 : subRequest.resolution / resolution 
 
-        const score = (cacheLength / subLength) * (subRequest.resolution / resolution)
-        // score should not be able to be greater than 1
+        const score = areaRatio * resolutionRatio * 1000
+        // Score should now be something between 0 and 1000
 
         return score
 
-        // todo unnötig detaillierte oder große Cache-Einträge nicht bevorzugen und evtl. sogar mit Score < 1 bewerten
+        // todo unnötig detaillierte oder große Cache-Einträge nicht bevorzugen und evtl. sogar mit Score < 1000 bewerten
     }
 
     /**
@@ -203,7 +216,6 @@ export default class MyDataSupplier implements DataSupplier {
 
         
         console.time("simplify")
-        console.time("simplify-self")
 
         const sharedBuffer = new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * channelData.length * 2)
         const sharedArray = new Float64Array(sharedBuffer)
@@ -212,7 +224,6 @@ export default class MyDataSupplier implements DataSupplier {
             sharedArray[i * 2 + 1] = channelData[i].value
         }
         
-        console.timeEnd("simplify-self")
         const data = await this.simplifyFunction(sharedBuffer, request.domainX, request.resolution)
 
         console.timeEnd("simplify")

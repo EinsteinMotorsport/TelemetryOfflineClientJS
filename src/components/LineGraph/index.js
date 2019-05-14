@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import { scaleLinear } from 'd3-scale'
 
 import Graph from './Graph'
-import CursorLine from './CursorLine'
 import Brush from './Brush'
 import useTotalDuration from '../../hooks/useTotalDuration'
+import VerticalCursor from './VerticalCursor'
 
 const StyledDiv = styled.div`
     position: absolute;
@@ -71,12 +71,13 @@ const LineGraph = ({
                         color={series.color}
                         marginLeft={margin.left}
                         marginBottom={margin.bottom}
+                        cursorX={cursorX}
                     />
                 })
             }
             {
                 cursorX !== null &&
-                <CursorLine left={margin.left} posX={cursorX} innerWidth={innerWidth} domainX={displayedDomainX} />
+                <VerticalCursor left={margin.left} cursorX={cursorX} innerWidth={innerWidth} domainX={displayedDomainX} />
             }
             {
                 settings.overview &&

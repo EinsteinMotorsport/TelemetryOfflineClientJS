@@ -27,7 +27,7 @@ export const getClosestDataPoint = (dataPoints, x) => {
  * @param {Float64Array} dataPoints 
  * @param {*} x 
  */
-export const getIndexBeforeXTyped = (dataPoints, x) => {
+export const getIndexAfterXTyped = (dataPoints, x) => {
     for (let i = 0; i < dataPoints.length / 2; i++) {
         if (dataPoints[i * 2] > x)
             return i
@@ -60,4 +60,29 @@ export const throttle = (callback, time) => {
 export const getDomainWithOverlap = (domain) => {
     const delta = (domain[1] - domain[0]) * 0.20 // 20 % overlap on each side
     return [domain[0] - delta, domain[1] + delta]
+}
+
+/**
+ * Returns the size of the overlap of the two domains
+ * @param {*} domain1 
+ * @param {*} domain2 
+ */
+export const getOverlappingArea = (domain1, domain2) => {
+    const left = Math.max(domain1[0], domain2[0])
+    const right = Math.min(domain1[1], domain2[1])
+    const area = right - left
+    if (area < 0)
+        return 0
+    return area
+}
+
+/**
+ * Returns the size of the provided domain
+ * @param {*} domain 
+ */
+export const getArea = (domain) => {
+    const area = domain[1] - domain[0]
+    if (area < 0)
+        return 0
+    return area
 }
