@@ -24,12 +24,12 @@ export default class HttpDataRetriever implements DataRetriever {
         return result
     }
 
-    async retrieveChannelData(channel: ChannelId): Promise<ChannelData> {
-        const response = await fetch(`channelData/${channel}.json`)
+    async retrieveChannelData(channel: ChannelId): Promise<ArrayBuffer|'notFound'> {
+        const response = await fetch(`channelData/${channel}.offlinechannel`)
         if (response.status !== 200)
             return "notFound"
         try {
-            return await response.json()
+            return await response.arrayBuffer()
         } catch (e) {
             console.error("Error loading json", e)
             return "notFound"

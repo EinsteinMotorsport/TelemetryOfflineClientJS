@@ -217,11 +217,11 @@ export default class MyDataSupplier implements DataSupplier {
         
         console.time("simplify")
 
-        const sharedBuffer = new SharedArrayBuffer(Float64Array.BYTES_PER_ELEMENT * channelData.length * 2)
+        const sharedBuffer = new SharedArrayBuffer(channelData.byteLength)
+        const unsharedArray = new Float64Array(channelData)
         const sharedArray = new Float64Array(sharedBuffer)
-        for (let i = 0; i < channelData.length; i++) {
-            sharedArray[i * 2] = channelData[i].time
-            sharedArray[i * 2 + 1] = channelData[i].value
+        for (let i = 0; i < unsharedArray.length; i++) {
+            sharedArray[i] = unsharedArray[i]
         }
         
         const data = await this.simplifyFunction(sharedBuffer, request.domainX, request.resolution)
