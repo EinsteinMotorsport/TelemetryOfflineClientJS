@@ -17,7 +17,7 @@ registerWorker(self, (sharedBuffer, domainX, resolution) => {
 
 
     const result = []
-    for (let i = 0; i < data.length / 2; i++) {
+    for (let i = 0; i < data.length / 2; i++) { // todo wrapper für ChannelData als SharedArrayBuffer
         result.push({
             time: data[i * 2],
             value: data[i * 2 + 1]
