@@ -37,6 +37,7 @@ export interface ChannelDataSubRequest {
     channel: ChannelId
     domainX: Domain
     resolution: number // tolerance => amount the provided data may deviate from the original
+    priority?: number // 0 means highest priority
 }
 
 /**

@@ -19,7 +19,8 @@ const useOffscreenCanvasLine = ({
     const request = {
         channel,
         domainX,
-        resolution: domainSize / innerWidth
+        resolution: domainSize / innerWidth,
+        priority: 10
     }
 
     const domainYFrom = domainY[0]

@@ -67,8 +67,11 @@ export default class MyDataSupplier implements DataSupplier {
                         channelData: bestEntry ? bestEntry.channelData : [],
                         fullyLoaded: fullMatch
                     })
-                    if (!fullMatch && toRetrieve === null)
-                        toRetrieve = subscription.subRequest
+                    if (!fullMatch) {
+                        if (toRetrieve === null || this.hasHigherPriority(toRetrieve, subscription.subRequest)) {
+                            toRetrieve = subscription.subRequest
+                        }
+                    }
             }
         }
 
@@ -211,5 +214,18 @@ export default class MyDataSupplier implements DataSupplier {
         const data = this.dataRetriever.retrieveChannelData(request);
         console.timeEnd("retrieve")
         return data
+    }
+
+    /**
+     * if request2 has higher priority
+     */
+    private hasHigherPriority(request1: ChannelDataSubRequest, request2: ChannelDataSubRequest): boolean {
+        if  (request2.priority === undefined)
+            return false
+
+        if (request1.priority === undefined)
+            return true
+
+        return request1.priority < request2.priority
     }
 }

@@ -4,7 +4,8 @@ import DataSupplierContext from '../data/dataSupplierContext'
 const useChannelData = ({
     channel,
     domainX: [domainXFrom, domainXTo],
-    resolution
+    resolution,
+    priority
 }) => {
     const [result, setResult] = useState({
         fullyLoaded: false,
@@ -18,7 +19,8 @@ const useChannelData = ({
             type: 'channelData',
             channel,
             domainX: [domainXFrom, domainXTo],
-            resolution
+            resolution,
+            priority
         }
         dataSupplier.subscribe(dataRequest, event => {
             setResult(event)
