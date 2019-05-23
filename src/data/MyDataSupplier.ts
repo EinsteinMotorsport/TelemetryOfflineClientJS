@@ -20,7 +20,7 @@ export default class MyDataSupplier implements DataSupplier {
     private subscriptions: Array<Subscription> = []
     private cache: Array<CacheEntry> = []
     private retrieving: boolean = false // if a retrieval is already in progress
-    private totalDuration = 0.02 * 50 * 60 * 15
+    private totalDuration = 0.02 * 50 * 60 * 60
 
 
     subscribe(request: SubRequest, changeHandler: SubEventHandler): void {
