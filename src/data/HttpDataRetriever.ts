@@ -1,6 +1,10 @@
-import { DataRetriever, ChannelData, ChannelDefinition, ChannelId } from './typeDefs'
+import { DataRetriever, ChannelData, ChannelDefinition, ChannelDataSubRequest } from './typeDefs'
+import { createWorkerFunction } from '../util/workerAsync';
+import DataRetrieverWorker from '../worker/DataRetriever.worker';
 
 export default class HttpDataRetriever implements DataRetriever {
+    private retrieveFunction = createWorkerFunction(DataRetrieverWorker)
+
     async retrieveChannelDefinitions(): Promise<Array<ChannelDefinition>> {
         const response = await fetch('channelDefinitions.txt')
         const text = await response.text()
@@ -24,15 +28,7 @@ export default class HttpDataRetriever implements DataRetriever {
         return result
     }
 
-    async retrieveChannelData(channel: ChannelId): Promise<ArrayBuffer|'notFound'> {
-        const response = await fetch(`channelData/${channel}.offlinechannel`)
-        if (response.status !== 200)
-            return "notFound"
-        try {
-            return await response.arrayBuffer()
-        } catch (e) {
-            console.error("Error loading json", e)
-            return "notFound"
-        }
+    async retrieveChannelData(request: ChannelDataSubRequest): Promise<ChannelData> {
+        return await this.retrieveFunction(request);
     }
 }

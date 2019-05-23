@@ -2,7 +2,7 @@ import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, 
 import HttpDataRetriever from './HttpDataRetriever'
 import { getDomainWithOverlap, getOverlappingArea, getArea } from '../util'
 import { createWorkerFunction } from '../util/workerAsync'
-import SimplifierWorker from '../worker/Simplifier.worker'
+import DataRetrieverWorker from '../worker/DataRetriever.worker'
 
 interface Subscription {
     subRequest: SubRequest
@@ -17,7 +17,6 @@ interface CacheEntry {
 
 export default class MyDataSupplier implements DataSupplier {
     private dataRetriever: DataRetriever = new HttpDataRetriever()
-    private simplifyFunction = createWorkerFunction(SimplifierWorker)
     private subscriptions: Array<Subscription> = []
     private cache: Array<CacheEntry> = []
     private retrieving: boolean = false // if a retrieval is already in progress
@@ -208,25 +207,9 @@ export default class MyDataSupplier implements DataSupplier {
      * @param request 
      */
     private async retrieveChannelData(request: ChannelDataSubRequest): Promise<ChannelData> {
-        const channelData = await this.dataRetriever.retrieveChannelData(request.channel)
-
-        if (channelData === "notFound") {
-            return channelData
-        }
-
-        
-        console.time("simplify")
-
-        const sharedBuffer = new SharedArrayBuffer(channelData.byteLength)
-        const unsharedArray = new Float64Array(channelData)
-        const sharedArray = new Float64Array(sharedBuffer)
-        for (let i = 0; i < unsharedArray.length; i++) {
-            sharedArray[i] = unsharedArray[i]
-        }
-        
-        const data = await this.simplifyFunction(sharedBuffer, request.domainX, request.resolution)
-
-        console.timeEnd("simplify")
+        console.time('retrieve')
+        const data = this.dataRetriever.retrieveChannelData(request);
+        console.timeEnd("retrieve")
         return data
     }
 }

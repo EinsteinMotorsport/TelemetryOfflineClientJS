@@ -1,30 +1,42 @@
+let resolutionIdCounter = 0
 
 export function createWorkerFunction(MyWorker: any): (...args: any[]) => Promise<any> {
     const worker: Worker = new MyWorker()
-    const resolutions: Array<(value?: any) => void> = []
+    const resolutions: Map<number, (value?: any) => void> = new Map()
+
     worker.addEventListener('message', (event: any) => {
-        const resolve = resolutions.shift()!
-        resolve(event.data)
+        const id = event.data.resolutionId
+        const resolve = resolutions.get(id)!
+        resolutions.delete(id)
+        resolve(event.data.returnValue)
     })
 
     return (...args) => {
+        const id = resolutionIdCounter++
         return new Promise(resolve => {
-            resolutions.push(resolve)
-            worker.postMessage(args)
+            resolutions.set(id, resolve)
+            worker.postMessage({
+                resolutionId: id,
+                args
+            })
         })
         
     }
 }
 
 export function registerWorker(context: Worker, callback: (...args: Array<any>) => any) {
-    context.addEventListener('message', event => {
+    context.addEventListener('message', async event => {
+        const id = event.data.resolutionId
         let result
         try {
-            result = callback(...event.data)
+            result = await callback(...event.data.args)
         } catch (e) {
-            console.error('Worker error', e)
-            result = null
+            console.error(`Worker error ${id}`, e)
+            result = null // todo reject
         }
-        context.postMessage(result)
+        context.postMessage({
+            resolutionId: id,
+            returnValue: result
+        })
     })
 }

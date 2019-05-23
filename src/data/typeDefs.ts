@@ -67,5 +67,5 @@ export interface DataSupplier {
 
 export interface DataRetriever {
     retrieveChannelDefinitions(): Promise<Array<ChannelDefinition>>
-    retrieveChannelData(channel: ChannelId): Promise<ArrayBuffer|'notFound'>
+    retrieveChannelData(request: ChannelDataSubRequest): Promise<ChannelData>
 }
