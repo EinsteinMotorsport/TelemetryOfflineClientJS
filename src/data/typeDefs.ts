@@ -1,8 +1,9 @@
+import { ChannelData } from './ChannelData'
 
 export type SubEventHandler = (event: SubEvent) => void
 export type ChannelId = number
 export type Domain = Array<number> // Range of ChannelData, Array has size 2
-export type ChannelData = Array<DataPoint> | "notFound"
+
 
 /**
  * Describes a channel
@@ -11,11 +12,6 @@ export interface ChannelDefinition {
     id: ChannelId
     name: string
     unit: string
-}
-
-export default interface DataPoint {
-    time: number
-    value: number
 }
 
 // Subscription Request

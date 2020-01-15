@@ -1,6 +1,7 @@
-import { DataRetriever, ChannelData, ChannelDefinition, ChannelDataSubRequest } from './typeDefs'
-import { createWorkerFunction } from '../util/workerAsync';
-import DataRetrieverWorker from '../worker/DataRetriever.worker';
+import { DataRetriever, ChannelDefinition, ChannelDataSubRequest } from './typeDefs'
+import { createWorkerFunction } from '../util/workerAsync'
+import DataRetrieverWorker from '../worker/DataRetriever.worker'
+import { ChannelData, createChannelDataWrapper } from './ChannelData'
 
 export default class HttpDataRetriever implements DataRetriever {
     private retrieveFunction = createWorkerFunction(DataRetrieverWorker)
@@ -29,6 +30,6 @@ export default class HttpDataRetriever implements DataRetriever {
     }
 
     async retrieveChannelData(request: ChannelDataSubRequest): Promise<ChannelData> {
-        return await this.retrieveFunction(request);
+        return createChannelDataWrapper(await this.retrieveFunction(request));
     }
 }

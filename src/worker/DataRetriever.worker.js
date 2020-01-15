@@ -2,6 +2,8 @@ import simplify from '../util/simplify'
 import { registerWorker } from '../util/workerAsync'
 import { getIndexAfterXTyped } from '../util'
 import { simplifytest } from '../util/simplifytest'
+import { ChannelData } from '../data/typeDefs'
+import { Float64Float64ChannelData } from '../data/ChannelData'
 
 registerWorker(self, async request => {
     const response = await fetch(`channelData/${request.channel}.offlinechannel`)
@@ -15,27 +17,35 @@ registerWorker(self, async request => {
         return 'error'
     }
 
+    
     const array = new Float64Array(buffer)
+    const raw = {
+        type: 'FLOAT64_FLOAT64',
+        data: array
+    }
+    let data = new Float64Float64ChannelData(raw)
 
-    const from = Math.max(getIndexAfterXTyped(array, request.domainX[0]) - 1, 0)
-    const to = Math.min(getIndexAfterXTyped(array, request.domainX[1]) + 1, array.length / 2)
+    data = data.subdataByTime(request.domainX[0], request.domainX[1])
 
-    let data = array.subarray(from * 2, to * 2)
-
-    if (request.resolution !== 0) { // resolution 0 means original data => no simplification
+    /* TODO if (request.resolution !== 0) { // resolution 0 means original data => no simplification
         data = simplifytest(data, request.resolution, true)
-    }
+    }*/
 
 
-    const result = []
-    for (let i = 0; i < data.length / 2; i++) { // todo wrapper für ChannelData als SharedArrayBuffer
-        result.push({
-            time: data[i * 2],
-            value: data[i * 2 + 1]
-        })
-    }
+    convertToSharedArrayBuffer(data)
 
-    return result
+    return data.asRaw()
 })
+
+function convertToSharedArrayBuffer(channelData) {
+    const raw = channelData.asRaw()
+    const oldData = raw.data
+    const shared = new SharedArrayBuffer(oldData.byteLength)
+    const newTyped = new Float64Array(shared)
+    for (let i = 0; i < oldData.length; i++) {
+        newTyped[i] = oldData[i]
+    }
+    raw.data = newTyped
+}
 
 export default null

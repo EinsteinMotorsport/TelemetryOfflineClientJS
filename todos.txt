@@ -4,5 +4,11 @@ unabhängige Y-Achse
 Legende oben rechts
 Einstellungen Sklaierung und automaitsch
 Kosmetik
-Fadenkreuz X- und Y-Wert als Zahl und Y-Fadenkreuz dünner
+Fadenkreuz X- und Y-Wert als Zahl und Y-Fadenkreuz dünner: Links Leiste mit Legende und aktuelle Werte
 Achsen mit dynamischer Anzahl Ticks
+Dokumentation mit Skizze auch für Rollout (was anschauliches)
+
+32 Bit Int Time, 32 Bit Int Value
+Channel Faktor
+Y-Werte interpolieren, obem gemeinsame Zeit
+Fadenkreuz auch interpolieren

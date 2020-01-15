@@ -1,5 +1,6 @@
 import { line } from 'd3-shape'
 import { scaleLinear } from 'd3-scale'
+import { createChannelDataWrapper } from '../data/ChannelData';
 
 const ctx = self
 
@@ -16,7 +17,7 @@ ctx.addEventListener('message', event => {
 })
 
 function render({
-    channelData,
+    rawChannelData,
     domainX,
     domainYFrom,
     domainYTo,
@@ -25,6 +26,7 @@ function render({
     innerHeight,
     pixelRatio
 }) {
+    const channelData = createChannelDataWrapper(rawChannelData)
     if (channelData.length === 0) {
         return {
             offscreenImage: null
@@ -42,8 +44,8 @@ function render({
         .domain([domainYFrom, domainYTo])
 
     // Every DataPoint present in the channelData array is drawn, therefore the size can be different each time
-    const minTime = channelData[0].time
-    const maxTime = channelData[channelData.length - 1].time
+    const minTime = channelData.getTime(0)
+    const maxTime = channelData.getTime(channelData.length - 1)
     const offset = requestedXScaler(minTime)
     const width = Math.min(Math.ceil(requestedXScaler(maxTime) - offset), innerWidth * pixelRatio * 5) // Limit to 5x the displayed canvas
     if (width === 0)
@@ -59,23 +61,21 @@ function render({
         .range([0, width])
         .domain([minTime, maxTime])
 
-    const valueLine = line()
-        .x(d => newXScaler(d.time))
-        .y(d => yScaler(d.value))
-
-
+        
     const offContext = canvas.getContext('2d')
 
     offContext.resetTransform()
-    offContext.scale(pixelRatio, pixelRatio) // For high resultion rendering (Retina displays)
-
-    const contextedValueLine = valueLine
-        .context(offContext)
+    offContext.scale(pixelRatio, pixelRatio) // For high resolution rendering (Retina displays)
 
     offContext.clearRect(0, 0, offContext.canvas.width, offContext.canvas.height)
 
     offContext.beginPath()
-    contextedValueLine(channelData) // D3 draws channelData
+    if (channelData.length > 0) {
+        offContext.moveTo(newXScaler(channelData.getTime(0)), yScaler(channelData.getValue(0)))
+        for (let i = 1; i < channelData.length; i++) {
+            offContext.lineTo(newXScaler(channelData.getTime(i)), yScaler(channelData.getValue(i)))
+        }
+    }
     offContext.lineWidth = 2
     offContext.strokeStyle = color
     offContext.stroke()

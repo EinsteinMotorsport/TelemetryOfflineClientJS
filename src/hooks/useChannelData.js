@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext } from 'react'
 import DataSupplierContext from '../data/dataSupplierContext'
+import { EmptyChannelData } from '../data/ChannelData';
 
 const useChannelData = ({
     channel,
@@ -9,7 +10,7 @@ const useChannelData = ({
 }) => {
     const [result, setResult] = useState({
         fullyLoaded: false,
-        channelData: []
+        channelData: new EmptyChannelData()
     })
 
     const dataSupplier = useContext(DataSupplierContext)

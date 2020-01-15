@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { scaleLinear } from 'd3-scale'
 import useChannelData from '../../hooks/useChannelData'
-import { getClosestDataPoint } from '../../util';
+import { getClosestDataPoint } from '../../util'
 
 const Pane = styled.div`
     position: absolute;

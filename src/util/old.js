@@ -22,19 +22,6 @@ export const getClosestDataPoint = (dataPoints, x) => {
     return item
 }
 
-/**
- * 
- * @param {Float64Array} dataPoints 
- * @param {*} x 
- */
-export const getIndexAfterXTyped = (dataPoints, x) => {
-    for (let i = 0; i < dataPoints.length / 2; i++) {
-        if (dataPoints[i * 2] > x)
-            return i
-    }
-    return dataPoints.length / 2
-}
-
 export const throttle = (callback, time) => {
     let running = false
     let callArgs

@@ -37,6 +37,8 @@ const useOffscreenCanvasLine = ({
     const { setTask } = useWorker({ 
         Worker,
         handler(data, done) {
+            if (data === null)
+                throw new Error("Error rendering line")
             if (data.offscreenImage === null) { // No image returned because nothing should be displayed
                 setStatus({
                     offscrenImage: null,
@@ -59,7 +61,7 @@ const useOffscreenCanvasLine = ({
     useMemo(() => {
         const task = {
             type: 'render',
-            channelData,
+            rawChannelData: channelData.asRaw(),
             domainX,
             domainYFrom,
             domainYTo,
@@ -70,7 +72,7 @@ const useOffscreenCanvasLine = ({
         }
         setTask(task)
 
-    }, [channelData, domainYFrom, domainYTo, color, innerWidth, innerHeight, pixelRatio])
+    }, [channelData.asRaw(), domainYFrom, domainYTo, color, innerWidth, innerHeight, pixelRatio])
     // TODO testen ob die Messserte auch an der richtigen Stelle dargestellt werden
     // TODO domainY mit einbeziehen in Skalierung in Line
 

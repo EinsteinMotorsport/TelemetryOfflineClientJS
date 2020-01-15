@@ -1,8 +1,9 @@
-import { DataSupplier, SubRequest, SubEventHandler, ChannelData, DataRetriever, ChannelDataSubRequest } from './typeDefs'
+import { DataSupplier, SubRequest, SubEventHandler, DataRetriever, ChannelDataSubRequest } from './typeDefs'
 import HttpDataRetriever from './HttpDataRetriever'
 import { getDomainWithOverlap, getOverlappingArea, getArea } from '../util'
 import { createWorkerFunction } from '../util/workerAsync'
 import DataRetrieverWorker from '../worker/DataRetriever.worker'
+import { EmptyChannelData, ChannelData } from './ChannelData'
 
 interface Subscription {
     subRequest: SubRequest
@@ -64,7 +65,7 @@ export default class MyDataSupplier implements DataSupplier {
 
                     subscription.changeHandler({
                         type: "channelData",
-                        channelData: bestEntry ? bestEntry.channelData : [],
+                        channelData: bestEntry ? bestEntry.channelData : new EmptyChannelData(),
                         fullyLoaded: fullMatch
                     })
                     if (!fullMatch) {
@@ -211,7 +212,7 @@ export default class MyDataSupplier implements DataSupplier {
      */
     private async retrieveChannelData(request: ChannelDataSubRequest): Promise<ChannelData> {
         console.time('retrieve')
-        const data = this.dataRetriever.retrieveChannelData(request);
+        const data = await this.dataRetriever.retrieveChannelData(request);
         console.timeEnd("retrieve")
         return data
     }
